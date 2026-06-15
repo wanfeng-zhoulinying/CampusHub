@@ -1,0 +1,32 @@
+﻿server:
+  port: 8080
+
+spring:
+  application:
+    name: campushub-server
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/campushub?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false
+    username: root
+    password: 123456
+
+  data:
+    redis:
+      host: 192.168.184.130
+      port: 6379
+      password: 516476
+      database: 2
+      timeout: 5s
+
+mybatis:
+  mapper-locations: classpath:/mapper/**/*.xml
+  type-aliases-package: com.campushub.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+logging:
+  level:
+    com.campushub: info
+    com.campushub.mapper: debug

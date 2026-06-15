@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.campushub.mapper.VenueMapper">
+
+    <select id="listVenues" resultType="com.campushub.vo.VenueListVO">
+        select
+            id,
+            name,
+            category,
+            location,
+            capacity,
+            cover_url,
+            status
+        from venue
+        where is_deleted = 0
+        <if test="status != null">
+            and status = #{status}
+        </if>
+        <if test="category != null and category != ''">
+            and category = #{category}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            and (
+                name like concat('%', #{keyword}, '%')
+                or location like concat('%', #{keyword}, '%')
+            )
+        </if>
+        order by id desc
+    </select>
+
+    <select id="getVenueDetailById" resultType="com.campushub.vo.VenueDetailVO">
+        select
+            id,
+            name,
+            category,
+            location,
+            capacity,
+            cover_url,
+            description,
+            longitude,
+            latitude,
+            status
+        from venue
+        where id = #{id}
+          and is_deleted = 0
+        limit 1
+    </select>
+
+    <select id="listVenueSlots" resultType="com.campushub.vo.VenueSlotVO">
+        select
+            id,
+            slot_date,
+            start_time,
+            end_time,
+            max_capacity,
+            available_capacity,
+            status
+        from venue_slot
+        where venue_id = #{venueId}
+          and slot_date = #{slotDate}
+        order by start_time asc
+    </select>
+
+</mapper>
