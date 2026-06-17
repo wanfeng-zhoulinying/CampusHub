@@ -22,11 +22,13 @@ public class Venue {
     private String coverUrl;
     /** 场地描述 */
     private String description;
+    /** 经度 */
     private BigDecimal longitude;
+    /** 纬度 */
     private BigDecimal latitude;
-    /** 场地状态：1开放 0关闭 */
+    /** 场地状态，VenueStatusConstant */
     private Integer status;
-    /** 逻辑删除标记：0否 1是 */
+    /** 逻辑删除标记，DeleteStatusConstant */
     private Integer isDeleted;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;

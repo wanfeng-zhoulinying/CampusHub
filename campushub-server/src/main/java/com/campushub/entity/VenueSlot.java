@@ -23,7 +23,7 @@ public class VenueSlot {
     private Integer maxCapacity;
     /** 当前时间段剩余可预约容量 */
     private Integer availableCapacity;
-    /** 时间段状态：1可预约 0关闭 2已满 */
+    /** 时间段状态，VenueSlotStatusConstant */
     private Integer status;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;

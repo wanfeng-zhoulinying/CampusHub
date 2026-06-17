@@ -4,13 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8b2107f5-00f7-4698-b1e4-557ee2aa8d8e" name="更改" comment="venue功能完结">
-      <change afterPath="$PROJECT_DIR$/src/main/resources/sql/booking/init_booking_test_data.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sqldialects.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
+    <list default="true" id="8b2107f5-00f7-4698-b1e4-557ee2aa8d8e" name="更改" comment="booking功能">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/controller/venue/VenueController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/controller/venue/VenueController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/entity/Booking.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/entity/Booking.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/entity/Venue.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/entity/Venue.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/entity/VenueSlot.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/entity/VenueSlot.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/sql/init_venue_test_data.sql" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/sql/venue/init_venue_test_data.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/booking/BookingServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/booking/BookingServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/venue/VenueServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/venue/VenueServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/mapper/booking/BookingMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/mapper/booking/BookingMapper.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -103,7 +105,7 @@
       <workItem from="1781419597175" duration="4792000" />
       <workItem from="1781507756511" duration="11686000" />
       <workItem from="1781591686968" duration="9100000" />
-      <workItem from="1781673872615" duration="3762000" />
+      <workItem from="1781673872615" duration="9155000" />
     </task>
     <task id="LOCAL-00001" summary="venue功能实现">
       <option name="closed" value="true" />
@@ -121,7 +123,15 @@
       <option name="project" value="LOCAL" />
       <updated>1781534345346</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="booking功能">
+      <option name="closed" value="true" />
+      <created>1781679972780</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1781679972780</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -141,6 +151,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="venue功能实现" />
     <MESSAGE value="venue功能完结" />
-    <option name="LAST_COMMIT_MESSAGE" value="venue功能完结" />
+    <MESSAGE value="booking功能" />
+    <option name="LAST_COMMIT_MESSAGE" value="booking功能" />
   </component>
 </project>

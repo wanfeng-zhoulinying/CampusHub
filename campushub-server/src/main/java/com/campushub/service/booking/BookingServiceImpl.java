@@ -1,5 +1,8 @@
 package com.campushub.service.booking;
 
+import com.campushub.constant.BookingBreachFlagConstant;
+import com.campushub.constant.BookingStatusConstant;
+import com.campushub.constant.VenueSlotStatusConstant;
 import com.campushub.dto.BookingCancelDTO;
 import com.campushub.dto.BookingCreateDTO;
 import com.campushub.dto.BookingQueryDTO;
@@ -27,7 +30,7 @@ public class BookingServiceImpl implements BookingService {
 
     /**
      * 创建预约记录。
-     * 当前阶段先按场地时段做容量校验和库存扣减，不接登录态，用户身份由 userId 临时传入。
+     * 当前阶段先按场地时间段做容量校验和库存扣减，不接登录态，用户身份由 userId 临时传入。
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -49,7 +52,7 @@ public class BookingServiceImpl implements BookingService {
         if (!slot.getVenueId().equals(createDTO.getVenueId())) {
             throw new BusinessException("场地和时间段不匹配");
         }
-        if (slot.getStatus() == null || slot.getStatus() != 1) {
+        if (!VenueSlotStatusConstant.AVAILABLE.equals(slot.getStatus())) {
             throw new BusinessException("当前时间段不可预约");
         }
         if (slot.getAvailableCapacity() < createDTO.getPersonCount()) {
@@ -70,8 +73,8 @@ public class BookingServiceImpl implements BookingService {
         booking.setStartTime(slot.getStartTime());
         booking.setEndTime(slot.getEndTime());
         booking.setPersonCount(createDTO.getPersonCount());
-        booking.setStatus(1);
-        booking.setBreachFlag(0);
+        booking.setStatus(BookingStatusConstant.BOOKED);
+        booking.setBreachFlag(BookingBreachFlagConstant.NO_BREACH);
         booking.setRemark(createDTO.getRemark());
 
         bookingMapper.saveBooking(booking);
@@ -80,7 +83,7 @@ public class BookingServiceImpl implements BookingService {
 
     /**
      * 查询当前用户的预约列表。
-     * 这里的“我的预约”先通过 userId 做筛选，后续接 JWT 后再替换成当前登录用户上下文。
+     * 这里的“我的预约”先通过 userId 筛选，后续接 JWT 后再替换成当前登录用户上下文。
      */
     @Override
     public List<BookingListVO> listMyBookings(BookingQueryDTO queryDTO) {
@@ -108,7 +111,7 @@ public class BookingServiceImpl implements BookingService {
         if (!booking.getUserId().equals(cancelDTO.getUserId())) {
             throw new BusinessException("无权取消他人的预约");
         }
-        if (booking.getStatus() == null || booking.getStatus() != 1) {
+        if (!BookingStatusConstant.BOOKED.equals(booking.getStatus())) {
             throw new BusinessException("当前预约状态不允许取消");
         }
 

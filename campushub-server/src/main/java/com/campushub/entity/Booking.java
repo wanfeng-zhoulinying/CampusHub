@@ -27,13 +27,13 @@ public class Booking {
     private LocalTime endTime;
     /** 预约人数 */
     private Integer personCount;
-    /** 预约状态：1待使用 2已完成 3已取消 4已违约 */
+    /** 预约状态，BookingStatusConstant */
     private Integer status;
     /** 取消原因 */
     private String cancelReason;
     /** 核销时间 */
     private LocalDateTime checkinTime;
-    /** 是否违约：0否 1是 */
+    /** 违约标记，BookingBreachFlagConstant */
     private Integer breachFlag;
     /** 备注 */
     private String remark;

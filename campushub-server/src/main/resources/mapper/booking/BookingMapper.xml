@@ -49,7 +49,7 @@
             end
         where id = #{slotId}
           and status = 1
-          and available_capacity >= #{personCount}
+          and available_capacity &gt;= #{personCount}
     </update>
 
     <update id="restoreSlotCapacity">
