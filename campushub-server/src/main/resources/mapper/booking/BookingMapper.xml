@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.campushub.mapper.BookingMapper">
+
+    <resultMap id="bookingResultMap" type="com.campushub.entity.Booking">
+        <id property="id" column="id"/>
+        <result property="bookingNo" column="booking_no"/>
+        <result property="userId" column="user_id"/>
+        <result property="venueId" column="venue_id"/>
+        <result property="slotId" column="slot_id"/>
+        <result property="bookingDate" column="booking_date"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="personCount" column="person_count"/>
+        <result property="status" column="status"/>
+        <result property="cancelReason" column="cancel_reason"/>
+        <result property="checkinTime" column="checkin_time"/>
+        <result property="breachFlag" column="breach_flag"/>
+        <result property="remark" column="remark"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <select id="getVenueSlotById" resultType="com.campushub.entity.VenueSlot">
+        select
+            id,
+            venue_id,
+            slot_date,
+            start_time,
+            end_time,
+            max_capacity,
+            available_capacity,
+            status,
+            create_time,
+            update_time
+        from venue_slot
+        where id = #{slotId}
+        limit 1
+    </select>
+
+    <update id="decreaseSlotCapacity">
+        update venue_slot
+        set available_capacity = available_capacity - #{personCount},
+            status = case
+                when available_capacity - #{personCount} = 0 then 2
+                else 1
+            end
+        where id = #{slotId}
+          and status = 1
+          and available_capacity >= #{personCount}
+    </update>
+
+    <update id="restoreSlotCapacity">
+        update venue_slot
+        set available_capacity = available_capacity + #{personCount},
+            status = 1
+        where id = #{slotId}
+    </update>
+
+    <insert id="saveBooking" useGeneratedKeys="true" keyProperty="id">
+        insert into booking (
+            booking_no,
+            user_id,
+            venue_id,
+            slot_id,
+            booking_date,
+            start_time,
+            end_time,
+            person_count,
+            status,
+            breach_flag,
+            remark
+        ) values (
+            #{bookingNo},
+            #{userId},
+            #{venueId},
+            #{slotId},
+            #{bookingDate},
+            #{startTime},
+            #{endTime},
+            #{personCount},
+            #{status},
+            #{breachFlag},
+            #{remark}
+        )
+    </insert>
+
+    <select id="getBookingById" resultMap="bookingResultMap">
+        select
+            id,
+            booking_no,
+            user_id,
+            venue_id,
+            slot_id,
+            booking_date,
+            start_time,
+            end_time,
+            person_count,
+            status,
+            cancel_reason,
+            checkin_time,
+            breach_flag,
+            remark,
+            create_time,
+            update_time
+        from booking
+        where id = #{id}
+        limit 1
+    </select>
+
+    <select id="listUserBookings" resultType="com.campushub.vo.BookingListVO">
+        select
+            b.id,
+            b.booking_no,
+            b.venue_id,
+            v.name as venue_name,
+            v.location as venue_location,
+            b.booking_date,
+            b.start_time,
+            b.end_time,
+            b.person_count,
+            b.status,
+            b.remark,
+            b.create_time
+        from booking b
+        left join venue v on b.venue_id = v.id
+        where b.user_id = #{userId}
+        <if test="status != null">
+            and b.status = #{status}
+        </if>
+        order by b.id desc
+    </select>
+
+    <update id="cancelBooking">
+        update booking
+        set status = 3,
+            cancel_reason = #{cancelReason},
+            update_time = now()
+        where id = #{id}
+          and status = 1
+    </update>
+
+</mapper>

@@ -9,6 +9,7 @@ import java.time.LocalTime;
 @Data
 public class VenueSlot {
 
+    /** 主键ID */
     private Long id;
     /** 所属场地ID */
     private Long venueId;

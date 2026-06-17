@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 @Data
 public class Venue {
 
+    /** 主键ID */
     private Long id;
     /** 场地名称 */
     private String name;
