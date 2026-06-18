@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.campushub.mapper.ActivityMapper">
+
+    <select id="listActivities" resultType="com.campushub.vo.ActivityListVO">
+        select
+            id,
+            title,
+            cover_url,
+            location,
+            signup_limit,
+            current_signup_count,
+            wait_limit,
+            status,
+            audit_status,
+            signup_start_time,
+            signup_end_time,
+            activity_start_time,
+            activity_end_time
+        from activity
+        where is_deleted = 0
+        <if test="keyword != null and keyword != ''">
+            and (
+                title like concat('%', #{keyword}, '%')
+                or location like concat('%', #{keyword}, '%')
+            )
+        </if>
+        <if test="status != null">
+            and status = #{status}
+        </if>
+        <if test="auditStatus != null">
+            and audit_status = #{auditStatus}
+        </if>
+        order by id desc
+    </select>
+
+    <select id="getActivityDetailById" resultType="com.campushub.vo.ActivityDetailVO">
+        select
+            id,
+            publisher_id,
+            title,
+            cover_url,
+            content,
+            location,
+            venue_id,
+            signup_limit,
+            current_signup_count,
+            wait_limit,
+            status,
+            audit_status,
+            audit_remark,
+            signup_start_time,
+            signup_end_time,
+            activity_start_time,
+            activity_end_time
+        from activity
+        where id = #{id}
+          and is_deleted = 0
+        limit 1
+    </select>
+
+    <insert id="saveSignup" useGeneratedKeys="true" keyProperty="id">
+        insert into activity_signup (
+            activity_id,
+            user_id,
+            signup_time,
+            signup_status,
+            sign_status,
+            wait_order
+        ) values (
+            #{activityId},
+            #{userId},
+            #{signupTime},
+            #{signupStatus},
+            #{signStatus},
+            #{waitOrder}
+        )
+    </insert>
+
+    <select id="getSignupById" resultType="com.campushub.entity.ActivitySignup">
+        select
+            id,
+            activity_id,
+            user_id,
+            signup_time,
+            signup_status,
+            sign_status,
+            sign_time,
+            cancel_time,
+            wait_order,
+            create_time,
+            update_time
+        from activity_signup
+        where id = #{id}
+        limit 1
+    </select>
+
+    <select id="getSignupByActivityIdAndUserId" resultType="com.campushub.entity.ActivitySignup">
+        select
+            id,
+            activity_id,
+            user_id,
+            signup_time,
+            signup_status,
+            sign_status,
+            sign_time,
+            cancel_time,
+            wait_order,
+            create_time,
+            update_time
+        from activity_signup
+        where activity_id = #{activityId}
+          and user_id = #{userId}
+        order by id desc
+        limit 1
+    </select>
+
+    <select id="listUserSignups" resultType="com.campushub.vo.ActivitySignupVO">
+        select
+            s.id,
+            s.activity_id,
+            a.title as activity_title,
+            a.location as activity_location,
+            s.signup_time,
+            s.signup_status,
+            s.sign_status,
+            s.sign_time,
+            s.cancel_time,
+            s.wait_order
+        from activity_signup s
+        left join activity a on s.activity_id = a.id
+        where s.user_id = #{userId}
+        <if test="signupStatus != null">
+            and s.signup_status = #{signupStatus}
+        </if>
+        order by s.id desc
+    </select>
+
+    <update id="cancelSignup">
+        update activity_signup
+        set signup_status = 2,
+            cancel_time = now(),
+            update_time = now()
+        where id = #{id}
+          and signup_status = 1
+    </update>
+
+    <update id="increaseSignupCount">
+        update activity
+        set current_signup_count = current_signup_count + 1
+        where id = #{activityId}
+          and current_signup_count &lt; signup_limit
+    </update>
+
+    <update id="decreaseSignupCount">
+        update activity
+        set current_signup_count = current_signup_count - 1
+        where id = #{activityId}
+          and current_signup_count &gt; 0
+    </update>
+
+    <select id="getActivityById" resultType="com.campushub.entity.Activity">
+        select
+            id,
+            publisher_id,
+            title,
+            cover_url,
+            content,
+            location,
+            venue_id,
+            signup_start_time,
+            signup_end_time,
+            activity_start_time,
+            activity_end_time,
+            signup_limit,
+            current_signup_count,
+            wait_limit,
+            status,
+            audit_status,
+            audit_remark,
+            audit_user_id,
+            audit_time,
+            is_deleted,
+            create_time,
+            update_time
+        from activity
+        where id = #{id}
+        limit 1
+    </select>
+
+</mapper>
