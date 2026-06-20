@@ -190,4 +190,14 @@
         limit 1
     </select>
 
+    <update id="signActivity">
+        update activity_signup
+        set sign_status = 1,
+            sign_time = now(),
+            update_time = now()
+        where id = #{id}
+          and signup_status = 1
+          and sign_status = 0
+    </update>
+
 </mapper>

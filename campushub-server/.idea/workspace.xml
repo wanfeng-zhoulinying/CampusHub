@@ -4,9 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8b2107f5-00f7-4698-b1e4-557ee2aa8d8e" name="更改" comment="接入constant常量">
-      <change beforePath="$PROJECT_DIR$/.idea/sqldialects.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
+    <list default="true" id="8b2107f5-00f7-4698-b1e4-557ee2aa8d8e" name="更改" comment="activity模块">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/controller/activity/ActivityController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/controller/activity/ActivityController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/controller/booking/BookingController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/controller/booking/BookingController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/mapper/ActivityMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/mapper/ActivityMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/mapper/BookingMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/mapper/BookingMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/activity/ActivityService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/activity/ActivityService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/activity/ActivityServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/activity/ActivityServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/booking/BookingService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/booking/BookingService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/booking/BookingServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/booking/BookingServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/mapper/activity/ActivityMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/mapper/activity/ActivityMapper.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/mapper/booking/BookingMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/mapper/booking/BookingMapper.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -100,7 +109,9 @@
       <workItem from="1781507756511" duration="11686000" />
       <workItem from="1781591686968" duration="9100000" />
       <workItem from="1781673872615" duration="11546000" />
-      <workItem from="1781763940733" duration="3424000" />
+      <workItem from="1781763940733" duration="4016000" />
+      <workItem from="1781856566583" duration="5401000" />
+      <workItem from="1781940685703" duration="725000" />
     </task>
     <task id="LOCAL-00001" summary="venue功能实现">
       <option name="closed" value="true" />
@@ -134,7 +145,15 @@
       <option name="project" value="LOCAL" />
       <updated>1781685126032</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="activity模块">
+      <option name="closed" value="true" />
+      <created>1781768886589</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1781768886589</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -156,6 +175,7 @@
     <MESSAGE value="venue功能完结" />
     <MESSAGE value="booking功能" />
     <MESSAGE value="接入constant常量" />
-    <option name="LAST_COMMIT_MESSAGE" value="接入constant常量" />
+    <MESSAGE value="activity模块" />
+    <option name="LAST_COMMIT_MESSAGE" value="activity模块" />
   </component>
 </project>

@@ -24,4 +24,6 @@ public interface BookingMapper {
     List<BookingListVO> listUserBookings(@Param("userId") Long userId, @Param("status") Integer status);
 
     int cancelBooking(@Param("id") Long id, @Param("cancelReason") String cancelReason);
+
+    int checkinBooking(@Param("id") Long id);
 }

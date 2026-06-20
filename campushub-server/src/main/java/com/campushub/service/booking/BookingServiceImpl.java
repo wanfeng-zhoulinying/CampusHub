@@ -124,6 +124,34 @@ public class BookingServiceImpl implements BookingService {
     }
 
     /**
+     * 场地预约核销。
+     * 只有预约本人且预约状态为待使用时，才允许完成核销。
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void checkinBooking(Long bookingId, Long userId) {
+        if (userId == null) {
+            throw new BusinessException("userId不能为空");
+        }
+
+        Booking booking = bookingMapper.getBookingById(bookingId);
+        if (booking == null) {
+            throw new BusinessException("预约记录不存在");
+        }
+        if (!booking.getUserId().equals(userId)) {
+            throw new BusinessException("无权核销他人的预约");
+        }
+        if (!BookingStatusConstant.BOOKED.equals(booking.getStatus())) {
+            throw new BusinessException("当前预约状态不允许核销");
+        }
+
+        int affectedRows = bookingMapper.checkinBooking(bookingId);
+        if (affectedRows == 0) {
+            throw new BusinessException("预约核销失败");
+        }
+    }
+
+    /**
      * 生成预约单号。
      * 单号由固定前缀、当前时间和四位随机数组成，用于区分业务预约记录。
      */

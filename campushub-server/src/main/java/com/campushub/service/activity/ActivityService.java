@@ -21,4 +21,6 @@ public interface ActivityService {
     List<ActivitySignupVO> listMySignups(ActivitySignupQueryDTO queryDTO);
 
     void cancelSignup(Long signupId, ActivitySignupCancelDTO cancelDTO);
+
+    void signActivity(Long signupId, Long userId);
 }

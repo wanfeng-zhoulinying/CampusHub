@@ -14,4 +14,6 @@ public interface BookingService {
     List<BookingListVO> listMyBookings(BookingQueryDTO queryDTO);
 
     void cancelBooking(Long bookingId, BookingCancelDTO cancelDTO);
+
+    void checkinBooking(Long bookingId, Long userId);
 }

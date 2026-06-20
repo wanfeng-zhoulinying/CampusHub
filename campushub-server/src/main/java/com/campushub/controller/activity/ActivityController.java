@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -70,6 +71,16 @@ public class ActivityController {
     @PutMapping("/{id}/cancel")
     public Result<Void> cancelSignup(@PathVariable("id") Long id, @RequestBody ActivitySignupCancelDTO cancelDTO) {
         activityService.cancelSignup(id, cancelDTO);
+        return Result.success();
+    }
+
+    /**
+     * 活动签到接口。
+     * 根据活动报名记录ID完成当前报名的签到。
+     */
+    @PutMapping("/{id}/checkin")
+    public Result<Void> signActivity(@PathVariable("id") Long id, @RequestParam("userId") Long userId) {
+        activityService.signActivity(id, userId);
         return Result.success();
     }
 }

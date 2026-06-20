@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -49,6 +50,16 @@ public class BookingController {
     @PutMapping("/{id}/cancel")
     public Result<Void> cancelBooking(@PathVariable("id") Long id, @RequestBody BookingCancelDTO cancelDTO) {
         bookingService.cancelBooking(id, cancelDTO);
+        return Result.success();
+    }
+
+    /**
+     * 场地预约核销接口。
+     * 根据预约记录ID完成当前预约的签到核销。
+     */
+    @PutMapping("/{id}/checkin")
+    public Result<Void> checkinBooking(@PathVariable("id") Long id, @RequestParam("userId") Long userId) {
+        bookingService.checkinBooking(id, userId);
         return Result.success();
     }
 }

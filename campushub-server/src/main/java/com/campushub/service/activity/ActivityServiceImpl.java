@@ -19,8 +19,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +30,7 @@ public class ActivityServiceImpl implements ActivityService {
 
     /**
      * 查询活动列表。
-     * 默认优先返回已通过审核、处于报名中的活动，方便前端直接展示。
+     * 默认只查询已通过审核且处于报名中的活动，并按 id 倒序返回。
      */
     @Override
     public List<ActivityListVO> listActivities(ActivityQueryDTO queryDTO) {
@@ -98,8 +98,7 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     /**
-     * 我的报名记录查询接口。
-     * 根据用户条件查询当前用户的活动报名列表。
+     * 查询当前用户的活动报名列表。
      */
     @Override
     public List<ActivitySignupVO> listMySignups(ActivitySignupQueryDTO queryDTO) {
@@ -137,5 +136,36 @@ public class ActivityServiceImpl implements ActivityService {
         }
 
         activityMapper.decreaseSignupCount(signup.getActivityId());
+    }
+
+    /**
+     * 活动签到。
+     * 只有报名成功且尚未签到的记录，才允许执行签到。
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void signActivity(Long signupId, Long userId) {
+        if (userId == null) {
+            throw new BusinessException("userId不能为空");
+        }
+
+        ActivitySignup signup = activityMapper.getSignupById(signupId);
+        if (signup == null) {
+            throw new BusinessException("报名记录不存在");
+        }
+        if (!signup.getUserId().equals(userId)) {
+            throw new BusinessException("无权签到他人的活动报名");
+        }
+        if (!ActivitySignupStatusConstant.SIGNED_UP.equals(signup.getSignupStatus())) {
+            throw new BusinessException("当前报名状态不允许签到");
+        }
+        if (!ActivitySignStatusConstant.NOT_SIGNED.equals(signup.getSignStatus())) {
+            throw new BusinessException("当前报名记录已签到");
+        }
+
+        int affectedRows = activityMapper.signActivity(signupId);
+        if (affectedRows == 0) {
+            throw new BusinessException("活动签到失败");
+        }
     }
 }

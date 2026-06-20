@@ -142,4 +142,13 @@
           and status = 1
     </update>
 
+    <update id="checkinBooking">
+        update booking
+        set status = 2,
+            checkin_time = now(),
+            update_time = now()
+        where id = #{id}
+          and status = 1
+    </update>
+
 </mapper>
