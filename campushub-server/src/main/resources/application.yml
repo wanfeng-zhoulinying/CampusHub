@@ -1,4 +1,4 @@
-﻿server:
+server:
   port: 8080
 
 spring:
@@ -30,3 +30,8 @@ logging:
   level:
     com.campushub: info
     com.campushub.mapper: debug
+
+campushub:
+  jwt:
+    secret: campushub-campushub-campushub-campushub-2026
+    expire-hours: 24

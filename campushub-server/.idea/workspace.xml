@@ -4,18 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8b2107f5-00f7-4698-b1e4-557ee2aa8d8e" name="更改" comment="activity模块">
+    <list default="true" id="8b2107f5-00f7-4698-b1e4-557ee2aa8d8e" name="更改" comment="booking场地预约核销+activity活动签到">
+      <change beforePath="$PROJECT_DIR$/.idea/sqldialects.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/controller/activity/ActivityController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/controller/activity/ActivityController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/controller/booking/BookingController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/controller/booking/BookingController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/mapper/ActivityMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/mapper/ActivityMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/mapper/BookingMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/mapper/BookingMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/activity/ActivityService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/activity/ActivityService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/activity/ActivityServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/activity/ActivityServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/booking/BookingService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/booking/BookingService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/booking/BookingServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/booking/BookingServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/mapper/activity/ActivityMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/mapper/activity/ActivityMapper.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/mapper/booking/BookingMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/mapper/booking/BookingMapper.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -78,7 +71,12 @@
       <recent name="F:\1-projectDesign\CampusHub\campushub-server\src\main\resources\sql\venue" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Spring Boot.CampusHubApplication">
+    <configuration name="init_user_test_data.sql" type="DatabaseScript" editBeforeRun="true" temporary="true" nameIsGenerated="true">
+      <script-file value="$PROJECT_DIR$/src/main/resources/sql/user/init_user_test_data.sql" />
+      <script-mode>FILE</script-mode>
+      <method v="2" />
+    </configuration>
     <configuration name="CampusHubApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <module name="campushub-server" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.campushub.CampusHubApplication" />
@@ -86,6 +84,11 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="数据库脚本.init_user_test_data.sql" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -111,7 +114,11 @@
       <workItem from="1781673872615" duration="11546000" />
       <workItem from="1781763940733" duration="4016000" />
       <workItem from="1781856566583" duration="5401000" />
-      <workItem from="1781940685703" duration="725000" />
+      <workItem from="1781940685703" duration="1675000" />
+      <workItem from="1781965368501" duration="2024000" />
+      <workItem from="1782052451558" duration="4147000" />
+      <workItem from="1782103800340" duration="350000" />
+      <workItem from="1782109213047" duration="4660000" />
     </task>
     <task id="LOCAL-00001" summary="venue功能实现">
       <option name="closed" value="true" />
@@ -153,7 +160,15 @@
       <option name="project" value="LOCAL" />
       <updated>1781768886589</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="booking场地预约核销+activity活动签到">
+      <option name="closed" value="true" />
+      <created>1781941729098</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1781941729098</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -176,6 +191,7 @@
     <MESSAGE value="booking功能" />
     <MESSAGE value="接入constant常量" />
     <MESSAGE value="activity模块" />
-    <option name="LAST_COMMIT_MESSAGE" value="activity模块" />
+    <MESSAGE value="booking场地预约核销+activity活动签到" />
+    <option name="LAST_COMMIT_MESSAGE" value="booking场地预约核销+activity活动签到" />
   </component>
 </project>
