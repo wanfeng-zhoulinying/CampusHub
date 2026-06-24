@@ -4,11 +4,23 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8b2107f5-00f7-4698-b1e4-557ee2aa8d8e" name="更改" comment="booking场地预约核销+activity活动签到">
+    <list default="true" id="8b2107f5-00f7-4698-b1e4-557ee2aa8d8e" name="更改" comment="用户注册、登录、查看当前用户，jwt配置落地，接入线程池">
+      <change afterPath="$PROJECT_DIR$/src/main/resources/sql/user/jwt_user_test_data.sql" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/sqldialects.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/config/WebMvcConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/config/WebMvcConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/controller/activity/ActivityController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/controller/activity/ActivityController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/controller/booking/BookingController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/controller/booking/BookingController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/dto/ActivitySignupCancelDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/dto/ActivitySignupDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/dto/ActivitySignupDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/dto/ActivitySignupQueryDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/dto/ActivitySignupQueryDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/dto/BookingCancelDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/dto/BookingCancelDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/dto/BookingCreateDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/dto/BookingCreateDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/dto/BookingQueryDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/dto/BookingQueryDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/activity/ActivityService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/activity/ActivityService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/activity/ActivityServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/activity/ActivityServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/booking/BookingService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/booking/BookingService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/booking/BookingServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/booking/BookingServiceImpl.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -118,7 +130,9 @@
       <workItem from="1781965368501" duration="2024000" />
       <workItem from="1782052451558" duration="4147000" />
       <workItem from="1782103800340" duration="350000" />
-      <workItem from="1782109213047" duration="4660000" />
+      <workItem from="1782109213047" duration="7465000" />
+      <workItem from="1782219645716" duration="2086000" />
+      <workItem from="1782284105393" duration="3838000" />
     </task>
     <task id="LOCAL-00001" summary="venue功能实现">
       <option name="closed" value="true" />
@@ -168,7 +182,15 @@
       <option name="project" value="LOCAL" />
       <updated>1781941729098</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="用户注册、登录、查看当前用户，jwt配置落地，接入线程池">
+      <option name="closed" value="true" />
+      <created>1782117652418</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1782117652418</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -192,6 +214,7 @@
     <MESSAGE value="接入constant常量" />
     <MESSAGE value="activity模块" />
     <MESSAGE value="booking场地预约核销+activity活动签到" />
-    <option name="LAST_COMMIT_MESSAGE" value="booking场地预约核销+activity活动签到" />
+    <MESSAGE value="用户注册、登录、查看当前用户，jwt配置落地，接入线程池" />
+    <option name="LAST_COMMIT_MESSAGE" value="用户注册、登录、查看当前用户，jwt配置落地，接入线程池" />
   </component>
 </project>

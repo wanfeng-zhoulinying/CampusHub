@@ -2,7 +2,6 @@ package com.campushub.controller.activity;
 
 import com.campushub.common.Result;
 import com.campushub.dto.ActivityQueryDTO;
-import com.campushub.dto.ActivitySignupCancelDTO;
 import com.campushub.dto.ActivitySignupDTO;
 import com.campushub.dto.ActivitySignupQueryDTO;
 import com.campushub.service.activity.ActivityService;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -30,7 +28,7 @@ public class ActivityController {
 
     /**
      * 活动列表查询接口。
-     * 支持按关键字、状态、审核状态筛选活动。
+     * 支持按关键字、活动状态、审核状态筛选活动。
      */
     @GetMapping("/list")
     public Result<List<ActivityListVO>> listActivities(ActivityQueryDTO queryDTO) {
@@ -39,7 +37,7 @@ public class ActivityController {
 
     /**
      * 活动详情查询接口。
-     * 根据活动ID查询单个活动的详细信息。
+     * 根据活动 ID 查询单个活动的详细信息。
      */
     @GetMapping("/{id}")
     public Result<ActivityDetailVO> getActivityDetail(@PathVariable("id") Long id) {
@@ -48,7 +46,7 @@ public class ActivityController {
 
     /**
      * 活动报名接口。
-     * 用户提交报名信息后返回报名记录ID。
+     * 当前登录用户提交报名后，返回活动报名记录 ID。
      */
     @PostMapping("/signup")
     public Result<Long> signupActivity(@RequestBody ActivitySignupDTO signupDTO) {
@@ -57,7 +55,7 @@ public class ActivityController {
 
     /**
      * 我的报名记录查询接口。
-     * 根据用户条件查询当前用户的活动报名列表。
+     * 根据当前登录用户查询活动报名记录，可按报名状态筛选。
      */
     @GetMapping("/my")
     public Result<List<ActivitySignupVO>> listMySignups(ActivitySignupQueryDTO queryDTO) {
@@ -66,21 +64,21 @@ public class ActivityController {
 
     /**
      * 取消活动报名接口。
-     * 根据报名记录ID取消对应报名。
+     * 根据报名记录 ID 取消当前登录用户自己的活动报名。
      */
     @PutMapping("/{id}/cancel")
-    public Result<Void> cancelSignup(@PathVariable("id") Long id, @RequestBody ActivitySignupCancelDTO cancelDTO) {
-        activityService.cancelSignup(id, cancelDTO);
+    public Result<Void> cancelSignup(@PathVariable("id") Long id) {
+        activityService.cancelSignup(id);
         return Result.success();
     }
 
     /**
      * 活动签到接口。
-     * 根据活动报名记录ID完成当前报名的签到。
+     * 根据活动报名记录 ID 完成当前登录用户本人的活动签到。
      */
     @PutMapping("/{id}/checkin")
-    public Result<Void> signActivity(@PathVariable("id") Long id, @RequestParam("userId") Long userId) {
-        activityService.signActivity(id, userId);
+    public Result<Void> signActivity(@PathVariable("id") Long id) {
+        activityService.signActivity(id);
         return Result.success();
     }
 }

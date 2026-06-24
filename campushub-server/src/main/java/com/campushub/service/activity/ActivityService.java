@@ -1,7 +1,6 @@
 package com.campushub.service.activity;
 
 import com.campushub.dto.ActivityQueryDTO;
-import com.campushub.dto.ActivitySignupCancelDTO;
 import com.campushub.dto.ActivitySignupDTO;
 import com.campushub.dto.ActivitySignupQueryDTO;
 import com.campushub.vo.ActivityDetailVO;
@@ -20,7 +19,7 @@ public interface ActivityService {
 
     List<ActivitySignupVO> listMySignups(ActivitySignupQueryDTO queryDTO);
 
-    void cancelSignup(Long signupId, ActivitySignupCancelDTO cancelDTO);
+    void cancelSignup(Long signupId);
 
-    void signActivity(Long signupId, Long userId);
+    void signActivity(Long signupId);
 }

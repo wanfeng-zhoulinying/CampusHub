@@ -5,7 +5,6 @@ import lombok.Data;
 @Data
 public class BookingCreateDTO {
 
-    private Long userId;
     private Long venueId;
     private Long slotId;
     private Integer personCount;
