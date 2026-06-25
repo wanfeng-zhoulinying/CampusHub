@@ -13,7 +13,7 @@ public interface ActivityService {
 
     List<ActivityListVO> listActivities(ActivityQueryDTO queryDTO);
 
-    ActivityDetailVO getActivityDetail(Long id);
+    ActivityDetailVO getActivityDetail(Long activityId);
 
     Long signupActivity(ActivitySignupDTO signupDTO);
 

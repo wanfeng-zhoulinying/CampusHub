@@ -25,8 +25,8 @@ public class VenueServiceImpl implements VenueService {
     }
 
     @Override
-    public VenueDetailVO getVenueDetail(Long id) {
-        return venueMapper.getVenueDetailById(id);
+    public VenueDetailVO getVenueDetail(Long venueId) {
+        return venueMapper.getVenueDetailById(venueId);
     }
 
     @Override

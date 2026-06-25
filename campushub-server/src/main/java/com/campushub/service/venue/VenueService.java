@@ -12,7 +12,7 @@ public interface VenueService {
 
     List<VenueListVO> listVenues(VenueQueryDTO queryDTO);
 
-    VenueDetailVO getVenueDetail(Long id);
+    VenueDetailVO getVenueDetail(Long venueId);
 
     List<VenueSlotVO> listVenueSlots(Long venueId, LocalDate slotDate);
 }

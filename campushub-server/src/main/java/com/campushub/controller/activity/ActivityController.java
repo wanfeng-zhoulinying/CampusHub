@@ -39,9 +39,9 @@ public class ActivityController {
      * 活动详情查询接口。
      * 根据活动 ID 查询单个活动的详细信息。
      */
-    @GetMapping("/{id}")
-    public Result<ActivityDetailVO> getActivityDetail(@PathVariable("id") Long id) {
-        return Result.success(activityService.getActivityDetail(id));
+    @GetMapping("/{activityId}")
+    public Result<ActivityDetailVO> getActivityDetail(@PathVariable("activityId") Long activityId) {
+        return Result.success(activityService.getActivityDetail(activityId));
     }
 
     /**
@@ -66,9 +66,9 @@ public class ActivityController {
      * 取消活动报名接口。
      * 根据报名记录 ID 取消当前登录用户自己的活动报名。
      */
-    @PutMapping("/{id}/cancel")
-    public Result<Void> cancelSignup(@PathVariable("id") Long id) {
-        activityService.cancelSignup(id);
+    @PutMapping("/{signupId}/cancel")
+    public Result<Void> cancelSignup(@PathVariable("signupId") Long signupId) {
+        activityService.cancelSignup(signupId);
         return Result.success();
     }
 
@@ -76,9 +76,9 @@ public class ActivityController {
      * 活动签到接口。
      * 根据活动报名记录 ID 完成当前登录用户本人的活动签到。
      */
-    @PutMapping("/{id}/checkin")
-    public Result<Void> signActivity(@PathVariable("id") Long id) {
-        activityService.signActivity(id);
+    @PutMapping("/{signupId}/checkin")
+    public Result<Void> signActivity(@PathVariable("signupId") Long signupId) {
+        activityService.signActivity(signupId);
         return Result.success();
     }
 }

@@ -46,9 +46,9 @@ public class BookingController {
      * 取消预约接口。
      * 只有当前登录用户自己的预约记录，才允许执行取消操作。
      */
-    @PutMapping("/{id}/cancel")
-    public Result<Void> cancelBooking(@PathVariable("id") Long id, @RequestBody BookingCancelDTO cancelDTO) {
-        bookingService.cancelBooking(id, cancelDTO);
+    @PutMapping("/{bookingId}/cancel")
+    public Result<Void> cancelBooking(@PathVariable("bookingId") Long bookingId, @RequestBody BookingCancelDTO cancelDTO) {
+        bookingService.cancelBooking(bookingId, cancelDTO);
         return Result.success();
     }
 
@@ -56,9 +56,9 @@ public class BookingController {
      * 场地预约核销接口。
      * 根据预约记录 ID 完成当前登录用户本人的预约核销。
      */
-    @PutMapping("/{id}/checkin")
-    public Result<Void> checkinBooking(@PathVariable("id") Long id) {
-        bookingService.checkinBooking(id);
+    @PutMapping("/{bookingId}/checkin")
+    public Result<Void> checkinBooking(@PathVariable("bookingId") Long bookingId) {
+        bookingService.checkinBooking(bookingId);
         return Result.success();
     }
 }

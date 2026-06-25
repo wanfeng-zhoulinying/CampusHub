@@ -42,8 +42,8 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public ActivityDetailVO getActivityDetail(Long id) {
-        return activityMapper.getActivityDetailById(id);
+    public ActivityDetailVO getActivityDetail(Long activityId) {
+        return activityMapper.getActivityDetailById(activityId);
     }
 
     /**

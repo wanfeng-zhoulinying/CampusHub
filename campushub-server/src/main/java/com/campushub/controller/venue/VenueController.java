@@ -35,21 +35,21 @@ public class VenueController {
 
     /**
      * 场地详情查询接口。
-     * 根据场地ID返回单个场地的基础展示信息。
+     * 根据场地 ID 返回单个场地的基础展示信息。
      */
-    @GetMapping("/{id}")
-    public Result<VenueDetailVO> getVenueDetail(@PathVariable("id") Long id) {
-        return Result.success(venueService.getVenueDetail(id));
+    @GetMapping("/{venueId}")
+    public Result<VenueDetailVO> getVenueDetail(@PathVariable("venueId") Long venueId) {
+        return Result.success(venueService.getVenueDetail(venueId));
     }
 
     /**
      * 场地时间段查询接口。
      * 查询指定场地在某一天可展示的时间段信息，为后续预约下单提供数据。
      */
-    @GetMapping("/{id}/slots")
+    @GetMapping("/{venueId}/slots")
     public Result<List<VenueSlotVO>> listVenueSlots(
-            @PathVariable("id") Long id,
+            @PathVariable("venueId") Long venueId,
             @RequestParam("date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
-        return Result.success(venueService.listVenueSlots(id, date));
+        return Result.success(venueService.listVenueSlots(venueId, date));
     }
 }
