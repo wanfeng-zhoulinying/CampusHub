@@ -200,4 +200,110 @@
           and sign_status = 0
     </update>
 
+    <select id="listAdminActivities" resultType="com.campushub.vo.AdminActivityListVO">
+        select
+            id,
+            title,
+            location,
+            venue_id,
+            signup_limit,
+            current_signup_count,
+            wait_limit,
+            status,
+            audit_status,
+            signup_start_time,
+            signup_end_time,
+            activity_start_time,
+            activity_end_time
+        from activity
+        where is_deleted = 0
+        <if test="title != null and title != ''">
+            and title like concat('%', #{title}, '%')
+        </if>
+        <if test="status != null">
+            and status = #{status}
+        </if>
+        <if test="auditStatus != null">
+            and audit_status = #{auditStatus}
+        </if>
+        order by id desc
+    </select>
+
+    <insert id="saveActivity" useGeneratedKeys="true" keyProperty="id">
+        insert into activity (
+            publisher_id,
+            title,
+            cover_url,
+            content,
+            location,
+            venue_id,
+            signup_start_time,
+            signup_end_time,
+            activity_start_time,
+            activity_end_time,
+            signup_limit,
+            current_signup_count,
+            wait_limit,
+            status,
+            audit_status,
+            is_deleted
+        ) values (
+            #{publisherId},
+            #{title},
+            #{coverUrl},
+            #{content},
+            #{location},
+            #{venueId},
+            #{signupStartTime},
+            #{signupEndTime},
+            #{activityStartTime},
+            #{activityEndTime},
+            #{signupLimit},
+            #{currentSignupCount},
+            #{waitLimit},
+            #{status},
+            #{auditStatus},
+            #{isDeleted}
+        )
+    </insert>
+
+    <update id="updateActivity">
+        update activity
+        set publisher_id = #{publisherId},
+            title = #{title},
+            cover_url = #{coverUrl},
+            content = #{content},
+            location = #{location},
+            venue_id = #{venueId},
+            signup_start_time = #{signupStartTime},
+            signup_end_time = #{signupEndTime},
+            activity_start_time = #{activityStartTime},
+            activity_end_time = #{activityEndTime},
+            signup_limit = #{signupLimit},
+            wait_limit = #{waitLimit},
+            status = #{status},
+            update_time = now()
+        where id = #{id}
+          and is_deleted = 0
+    </update>
+
+    <update id="auditActivity">
+        update activity
+        set audit_status = #{auditStatus},
+            audit_remark = #{auditRemark},
+            audit_user_id = #{auditUserId},
+            audit_time = now(),
+            update_time = now()
+        where id = #{activityId}
+          and is_deleted = 0
+    </update>
+
+    <update id="updateActivityStatus">
+        update activity
+        set status = #{status},
+            update_time = now()
+        where id = #{activityId}
+          and is_deleted = 0
+    </update>
+
 </mapper>

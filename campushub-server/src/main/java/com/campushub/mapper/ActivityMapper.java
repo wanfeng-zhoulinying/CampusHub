@@ -5,6 +5,7 @@ import com.campushub.entity.ActivitySignup;
 import com.campushub.vo.ActivityDetailVO;
 import com.campushub.vo.ActivityListVO;
 import com.campushub.vo.ActivitySignupVO;
+import com.campushub.vo.AdminActivityListVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -38,4 +39,19 @@ public interface ActivityMapper {
     Activity getActivityById(@Param("id") Long id);
 
     int signActivity(@Param("id") Long id);
+
+    List<AdminActivityListVO> listAdminActivities(@Param("title") String title,
+                                                  @Param("status") Integer status,
+                                                  @Param("auditStatus") Integer auditStatus);
+
+    int saveActivity(Activity activity);
+
+    int updateActivity(Activity activity);
+
+    int auditActivity(@Param("activityId") Long activityId,
+                      @Param("auditStatus") Integer auditStatus,
+                      @Param("auditRemark") String auditRemark,
+                      @Param("auditUserId") Long auditUserId);
+
+    int updateActivityStatus(@Param("activityId") Long activityId, @Param("status") Integer status);
 }

@@ -63,4 +63,97 @@
         order by start_time asc
     </select>
 
+    <select id="listAdminVenues" resultType="com.campushub.vo.AdminVenueListVO">
+        select
+            id,
+            name,
+            category,
+            location,
+            capacity,
+            cover_url,
+            status
+        from venue
+        where is_deleted = 0
+        <if test="name != null and name != ''">
+            and name like concat('%', #{name}, '%')
+        </if>
+        <if test="category != null and category != ''">
+            and category = #{category}
+        </if>
+        <if test="status != null">
+            and status = #{status}
+        </if>
+        order by id desc
+    </select>
+
+    <select id="getVenueById" resultType="com.campushub.entity.Venue">
+        select
+            id,
+            name,
+            category,
+            location,
+            capacity,
+            cover_url,
+            description,
+            longitude,
+            latitude,
+            status,
+            is_deleted,
+            create_time,
+            update_time
+        from venue
+        where id = #{id}
+        limit 1
+    </select>
+
+    <insert id="saveVenue" useGeneratedKeys="true" keyProperty="id">
+        insert into venue (
+            name,
+            category,
+            location,
+            capacity,
+            cover_url,
+            description,
+            longitude,
+            latitude,
+            status,
+            is_deleted
+        ) values (
+            #{name},
+            #{category},
+            #{location},
+            #{capacity},
+            #{coverUrl},
+            #{description},
+            #{longitude},
+            #{latitude},
+            #{status},
+            #{isDeleted}
+        )
+    </insert>
+
+    <update id="updateVenue">
+        update venue
+        set name = #{name},
+            category = #{category},
+            location = #{location},
+            capacity = #{capacity},
+            cover_url = #{coverUrl},
+            description = #{description},
+            longitude = #{longitude},
+            latitude = #{latitude},
+            status = #{status},
+            update_time = now()
+        where id = #{id}
+          and is_deleted = 0
+    </update>
+
+    <update id="updateVenueStatus">
+        update venue
+        set status = #{status},
+            update_time = now()
+        where id = #{venueId}
+          and is_deleted = 0
+    </update>
+
 </mapper>

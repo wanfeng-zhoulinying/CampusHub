@@ -4,15 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8b2107f5-00f7-4698-b1e4-557ee2aa8d8e" name="更改" comment="md1.0">
+    <list default="true" id="8b2107f5-00f7-4698-b1e4-557ee2aa8d8e" name="更改" comment="重构预定id,场地id名，活动id,报名id">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/controller/activity/ActivityController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/controller/activity/ActivityController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/controller/booking/BookingController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/controller/booking/BookingController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/controller/venue/VenueController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/controller/venue/VenueController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/activity/ActivityService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/activity/ActivityService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/activity/ActivityServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/activity/ActivityServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/venue/VenueService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/venue/VenueService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/venue/VenueServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/venue/VenueServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/mapper/ActivityMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/mapper/ActivityMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/mapper/VenueMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/mapper/VenueMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/mapper/activity/ActivityMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/mapper/activity/ActivityMapper.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/mapper/venue/VenueMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/mapper/venue/VenueMapper.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -125,7 +122,8 @@
       <workItem from="1782109213047" duration="7465000" />
       <workItem from="1782219645716" duration="2086000" />
       <workItem from="1782284105393" duration="5530000" />
-      <workItem from="1782368814932" duration="4378000" />
+      <workItem from="1782368814932" duration="5022000" />
+      <workItem from="1782456672486" duration="5889000" />
     </task>
     <task id="LOCAL-00001" summary="venue功能实现">
       <option name="closed" value="true" />
@@ -199,7 +197,15 @@
       <option name="project" value="LOCAL" />
       <updated>1782371105886</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="重构预定id,场地id名，活动id,报名id">
+      <option name="closed" value="true" />
+      <created>1782402633149</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1782402633149</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -226,6 +232,7 @@
     <MESSAGE value="用户注册、登录、查看当前用户，jwt配置落地，接入线程池" />
     <MESSAGE value="对booking和activity进行jwt改造初版" />
     <MESSAGE value="md1.0" />
-    <option name="LAST_COMMIT_MESSAGE" value="md1.0" />
+    <MESSAGE value="重构预定id,场地id名，活动id,报名id" />
+    <option name="LAST_COMMIT_MESSAGE" value="重构预定id,场地id名，活动id,报名id" />
   </component>
 </project>
