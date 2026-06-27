@@ -2,9 +2,8 @@
 <project version="4">
   <component name="SqlDialectMappings">
     <file url="file://$PROJECT_DIR$/src/main/resources/sql/activity/init_activity_test_data.sql" dialect="MySQL" />
-    <file url="file://$PROJECT_DIR$/src/main/resources/sql/booking/init_booking_test_data.sql" dialect="MySQL" />
-    <file url="file://$PROJECT_DIR$/src/main/resources/sql/user/init_user_test_data.sql" dialect="MySQL" />
-    <file url="file://$PROJECT_DIR$/src/main/resources/sql/user/jwt_user_test_data.sql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/sql/admin/alter_sys_user_add_role.sql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/sql/admin/init_admin_user.sql" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/src/main/resources/sql/venue/init_venue_test_data.sql" dialect="MySQL" />
   </component>
 </project>

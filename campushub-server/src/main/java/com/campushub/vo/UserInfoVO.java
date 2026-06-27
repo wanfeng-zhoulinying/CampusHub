@@ -13,5 +13,6 @@ public class UserInfoVO {
     private String avatar;
     private String studentNo;
     private Integer creditScore;
+    private Integer role;
     private Integer status;
 }

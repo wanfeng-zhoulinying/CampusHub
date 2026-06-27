@@ -11,5 +11,9 @@ public interface UserService {
 
     UserLoginVO login(UserLoginDTO loginDTO);
 
+    UserLoginVO adminLogin(UserLoginDTO loginDTO);
+
     UserInfoVO getCurrentUser();
+
+    UserInfoVO getCurrentAdmin();
 }

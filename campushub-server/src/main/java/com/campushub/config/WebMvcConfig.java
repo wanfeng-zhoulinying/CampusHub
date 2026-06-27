@@ -17,11 +17,13 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(jwtTokenInterceptor)
                 .addPathPatterns(
                         "/user/me",
+                        "/admin/**",
                         "/booking/**",
                         "/activity/signup",
                         "/activity/my",
                         "/activity/*/cancel",
                         "/activity/*/checkin"
-                );
+                )
+                .excludePathPatterns("/admin/login");
     }
 }

@@ -25,6 +25,8 @@ public class SysUser {
     private String studentNo;
     /** 信用分 */
     private Integer creditScore;
+    /** 用户角色，UserRoleConstant */
+    private Integer role;
     /** 用户状态，UserStatusConstant */
     private Integer status;
     /** 逻辑删除标记，DeleteStatusConstant */

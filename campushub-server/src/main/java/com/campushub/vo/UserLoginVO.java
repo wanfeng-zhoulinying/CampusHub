@@ -8,5 +8,6 @@ public class UserLoginVO {
     private Long id;
     private String username;
     private String realName;
+    private Integer role;
     private String token;
 }

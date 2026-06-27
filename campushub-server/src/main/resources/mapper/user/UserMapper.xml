@@ -14,6 +14,7 @@
         <result property="avatar" column="avatar"/>
         <result property="studentNo" column="student_no"/>
         <result property="creditScore" column="credit_score"/>
+        <result property="role" column="role"/>
         <result property="status" column="status"/>
         <result property="isDeleted" column="is_deleted"/>
         <result property="createTime" column="create_time"/>
@@ -31,6 +32,7 @@
             avatar,
             student_no,
             credit_score,
+            role,
             status,
             is_deleted,
             create_time,
@@ -50,6 +52,7 @@
             avatar,
             student_no,
             credit_score,
+            role,
             status,
             is_deleted
         ) values (
@@ -61,6 +64,7 @@
             #{avatar},
             #{studentNo},
             #{creditScore},
+            #{role},
             #{status},
             #{isDeleted}
         )
@@ -77,6 +81,7 @@
             avatar,
             student_no,
             credit_score,
+            role,
             status,
             is_deleted,
             create_time,
