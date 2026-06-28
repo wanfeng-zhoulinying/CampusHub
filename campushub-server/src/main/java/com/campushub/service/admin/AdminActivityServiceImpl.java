@@ -3,12 +3,14 @@ package com.campushub.service.admin;
 import com.campushub.constant.ActivityAuditStatusConstant;
 import com.campushub.constant.ActivityStatusConstant;
 import com.campushub.constant.DeleteStatusConstant;
+import com.campushub.constant.MessageTypeConstant;
 import com.campushub.dto.AdminActivityAuditDTO;
 import com.campushub.dto.AdminActivityQueryDTO;
 import com.campushub.dto.AdminActivitySaveDTO;
 import com.campushub.entity.Activity;
 import com.campushub.exception.BusinessException;
 import com.campushub.mapper.ActivityMapper;
+import com.campushub.service.message.MessageService;
 import com.campushub.vo.AdminActivityListVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,7 @@ import java.util.List;
 public class AdminActivityServiceImpl implements AdminActivityService {
 
     private final ActivityMapper activityMapper;
+    private final MessageService messageService;
 
     /**
      * 后台活动列表。
@@ -100,7 +103,7 @@ public class AdminActivityServiceImpl implements AdminActivityService {
 
     /**
      * 审核活动。
-     * 审核接口只处理审核状态、审核备注、审核人和审核时间。
+     * 审核成功后给活动发布人发送审核结果通知。
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -112,6 +115,11 @@ public class AdminActivityServiceImpl implements AdminActivityService {
             throw new BusinessException("审核人不能为空");
         }
 
+        Activity activity = activityMapper.getActivityById(activityId);
+        if (activity == null || DeleteStatusConstant.DELETED.equals(activity.getIsDeleted())) {
+            throw new BusinessException("活动不存在");
+        }
+
         int affectedRows = activityMapper.auditActivity(
                 activityId,
                 auditDTO.getAuditStatus(),
@@ -121,11 +129,19 @@ public class AdminActivityServiceImpl implements AdminActivityService {
         if (affectedRows == 0) {
             throw new BusinessException("活动审核失败");
         }
+
+        messageService.createMessage(
+                activity.getPublisherId(),
+                "活动审核结果",
+                "你发布的活动《" + activity.getTitle() + "》" + getAuditResultText(auditDTO.getAuditStatus()),
+                MessageTypeConstant.AUDIT,
+                activityId
+        );
     }
 
     /**
      * 修改活动状态。
-     * 管理端可以直接维护活动的当前状态。
+     * 管理端可以直接维护活动当前状态。
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -138,6 +154,16 @@ public class AdminActivityServiceImpl implements AdminActivityService {
         if (affectedRows == 0) {
             throw new BusinessException("活动状态修改失败");
         }
+    }
+
+    private String getAuditResultText(Integer auditStatus) {
+        if (ActivityAuditStatusConstant.APPROVED.equals(auditStatus)) {
+            return "审核通过";
+        }
+        if (ActivityAuditStatusConstant.REJECTED.equals(auditStatus)) {
+            return "审核未通过";
+        }
+        return "审核状态已更新";
     }
 
     private void validateActivitySaveDTO(AdminActivitySaveDTO saveDTO) {

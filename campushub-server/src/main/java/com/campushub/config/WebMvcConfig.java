@@ -19,6 +19,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/user/me",
                         "/admin/**",
                         "/booking/**",
+                        "/message/**",
                         "/activity/signup",
                         "/activity/my",
                         "/activity/*/cancel",

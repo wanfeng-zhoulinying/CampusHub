@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.campushub.mapper.MessageMapper">
+
+    <insert id="saveMessage" useGeneratedKeys="true" keyProperty="id">
+        insert into message (
+            user_id,
+            title,
+            content,
+            type,
+            business_id,
+            read_status,
+            is_deleted
+        ) values (
+            #{userId},
+            #{title},
+            #{content},
+            #{type},
+            #{businessId},
+            #{readStatus},
+            #{isDeleted}
+        )
+    </insert>
+
+    <select id="listUserMessages" resultType="com.campushub.vo.MessageVO">
+        select
+            id,
+            title,
+            content,
+            type,
+            business_id,
+            read_status,
+            create_time
+        from message
+        where user_id = #{userId}
+          and is_deleted = 0
+        <if test="readStatus != null">
+            and read_status = #{readStatus}
+        </if>
+        order by id desc
+    </select>
+
+    <update id="markAsRead">
+        update message
+        set read_status = 1,
+            update_time = now()
+        where id = #{messageId}
+          and user_id = #{userId}
+          and is_deleted = 0
+    </update>
+
+    <select id="countUnread" resultType="java.lang.Integer">
+        select count(1)
+        from message
+        where user_id = #{userId}
+          and read_status = 0
+          and is_deleted = 0
+    </select>
+
+</mapper>

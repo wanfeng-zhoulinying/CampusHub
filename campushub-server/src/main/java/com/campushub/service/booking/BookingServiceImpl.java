@@ -2,6 +2,7 @@ package com.campushub.service.booking;
 
 import com.campushub.constant.BookingBreachFlagConstant;
 import com.campushub.constant.BookingStatusConstant;
+import com.campushub.constant.MessageTypeConstant;
 import com.campushub.constant.VenueSlotStatusConstant;
 import com.campushub.dto.BookingCancelDTO;
 import com.campushub.dto.BookingCreateDTO;
@@ -10,6 +11,7 @@ import com.campushub.entity.Booking;
 import com.campushub.entity.VenueSlot;
 import com.campushub.exception.BusinessException;
 import com.campushub.mapper.BookingMapper;
+import com.campushub.service.message.MessageService;
 import com.campushub.utils.UserContext;
 import com.campushub.vo.BookingListVO;
 import lombok.RequiredArgsConstructor;
@@ -28,10 +30,11 @@ public class BookingServiceImpl implements BookingService {
     private static final DateTimeFormatter BOOKING_NO_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
     private final BookingMapper bookingMapper;
+    private final MessageService messageService;
 
     /**
      * 创建预约记录。
-     * 当前用户身份从登录态获取，业务层只处理场地、时间段与容量校验。
+     * 当前用户身份从登录态获取，预约成功后生成一条站内通知。
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -77,12 +80,19 @@ public class BookingServiceImpl implements BookingService {
         booking.setRemark(createDTO.getRemark());
 
         bookingMapper.saveBooking(booking);
+        messageService.createMessage(
+                currentUserId,
+                "预约成功通知",
+                "你的场地预约已成功，预约单号：" + booking.getBookingNo(),
+                MessageTypeConstant.BOOKING,
+                booking.getId()
+        );
         return booking.getId();
     }
 
     /**
      * 查询当前登录用户的预约列表。
-     * “我的预约”统一从登录态读取用户信息，不再接受前端传 userId。
+     * “我的预约”统一从登录态读取用户信息，不接受前端传 userId。
      */
     @Override
     public List<BookingListVO> listMyBookings(BookingQueryDTO queryDTO) {
@@ -91,7 +101,7 @@ public class BookingServiceImpl implements BookingService {
 
     /**
      * 取消预约。
-     * 取消成功后回滚时间段容量，保证后续用户仍可继续预约这个时间段。
+     * 取消成功后回滚时间段容量，并生成预约取消通知。
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -115,11 +125,18 @@ public class BookingServiceImpl implements BookingService {
         }
 
         bookingMapper.restoreSlotCapacity(booking.getSlotId(), booking.getPersonCount());
+        messageService.createMessage(
+                currentUserId,
+                "预约取消通知",
+                "你的场地预约已取消，预约单号：" + booking.getBookingNo(),
+                MessageTypeConstant.BOOKING,
+                bookingId
+        );
     }
 
     /**
      * 场地预约核销。
-     * 只有当前登录用户自己的预约记录，且状态为已预约时，才允许完成核销。
+     * 当前登录用户只能核销自己的预约，核销成功后生成通知。
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -141,11 +158,18 @@ public class BookingServiceImpl implements BookingService {
         if (affectedRows == 0) {
             throw new BusinessException("预约核销失败");
         }
+        messageService.createMessage(
+                currentUserId,
+                "预约核销通知",
+                "你的场地预约已完成核销，预约单号：" + booking.getBookingNo(),
+                MessageTypeConstant.BOOKING,
+                bookingId
+        );
     }
 
     /**
      * 生成预约单号。
-     * 单号由固定前缀、当前时间和四位随机数组成，用于区分业务预约记录。
+     * 单号由固定前缀、当前时间和四位随机数组成。
      */
     private String generateBookingNo() {
         return "BK" + LocalDateTime.now().format(BOOKING_NO_TIME_FORMATTER)
@@ -154,7 +178,7 @@ public class BookingServiceImpl implements BookingService {
 
     /**
      * 获取当前登录用户 ID。
-     * booking 模块所有“我的数据”与写操作，都应以登录态为准而不是信任前端传参。
+     * booking 模块所有“我的数据”和写操作，都以登录态为准。
      */
     private Long getCurrentUserId() {
         Long currentUserId = UserContext.getCurrentUserId();
