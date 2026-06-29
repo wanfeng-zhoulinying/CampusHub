@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.campushub.mapper.SocialMapper">
+
+    <insert id="saveComment" useGeneratedKeys="true" keyProperty="id">
+        insert into activity_comment (
+            activity_id,
+            user_id,
+            content,
+            like_count,
+            is_deleted
+        ) values (
+            #{activityId},
+            #{userId},
+            #{content},
+            #{likeCount},
+            #{isDeleted}
+        )
+    </insert>
+
+    <select id="getCommentById" resultType="com.campushub.entity.ActivityComment">
+        select
+            id,
+            activity_id,
+            user_id,
+            content,
+            like_count,
+            is_deleted,
+            create_time,
+            update_time
+        from activity_comment
+        where id = #{commentId}
+        limit 1
+    </select>
+
+    <select id="listActivityComments" resultType="com.campushub.vo.ActivityCommentVO">
+        select
+            c.id,
+            c.activity_id,
+            c.user_id,
+            u.username,
+            u.real_name,
+            c.content,
+            c.like_count,
+            case
+                when l.id is null then false
+                else true
+            end as liked,
+            c.create_time
+        from activity_comment c
+        left join sys_user u on c.user_id = u.id
+        left join activity_comment_like l
+            on c.id = l.comment_id
+            and l.user_id = #{currentUserId}
+            and l.status = 1
+        where c.activity_id = #{activityId}
+          and c.is_deleted = 0
+        order by c.id desc
+    </select>
+
+    <select id="getCommentLike" resultType="com.campushub.entity.ActivityCommentLike">
+        select
+            id,
+            comment_id,
+            user_id,
+            status,
+            create_time,
+            update_time
+        from activity_comment_like
+        where comment_id = #{commentId}
+          and user_id = #{userId}
+        limit 1
+    </select>
+
+    <insert id="saveCommentLike" useGeneratedKeys="true" keyProperty="id">
+        insert into activity_comment_like (
+            comment_id,
+            user_id,
+            status
+        ) values (
+            #{commentId},
+            #{userId},
+            #{status}
+        )
+    </insert>
+
+    <update id="updateCommentLikeStatus">
+        update activity_comment_like
+        set status = #{status},
+            update_time = now()
+        where comment_id = #{commentId}
+          and user_id = #{userId}
+    </update>
+
+    <update id="increaseCommentLikeCount">
+        update activity_comment
+        set like_count = like_count + 1,
+            update_time = now()
+        where id = #{commentId}
+          and is_deleted = 0
+    </update>
+
+    <update id="decreaseCommentLikeCount">
+        update activity_comment
+        set like_count = case
+                when like_count &gt; 0 then like_count - 1
+                else 0
+            end,
+            update_time = now()
+        where id = #{commentId}
+          and is_deleted = 0
+    </update>
+
+    <select id="getActivityFavorite" resultType="com.campushub.entity.ActivityFavorite">
+        select
+            id,
+            activity_id,
+            user_id,
+            status,
+            create_time,
+            update_time
+        from activity_favorite
+        where activity_id = #{activityId}
+          and user_id = #{userId}
+        limit 1
+    </select>
+
+    <insert id="saveActivityFavorite" useGeneratedKeys="true" keyProperty="id">
+        insert into activity_favorite (
+            activity_id,
+            user_id,
+            status
+        ) values (
+            #{activityId},
+            #{userId},
+            #{status}
+        )
+    </insert>
+
+    <update id="updateActivityFavoriteStatus">
+        update activity_favorite
+        set status = #{status},
+            update_time = now()
+        where activity_id = #{activityId}
+          and user_id = #{userId}
+    </update>
+
+    <select id="listUserFavorites" resultType="com.campushub.vo.ActivityFavoriteVO">
+        select
+            f.id as favorite_id,
+            a.id as activity_id,
+            a.title as activity_title,
+            a.cover_url,
+            a.location,
+            a.status,
+            a.audit_status,
+            a.activity_start_time,
+            a.activity_end_time,
+            f.create_time
+        from activity_favorite f
+        left join activity a on f.activity_id = a.id
+        where f.user_id = #{userId}
+          and f.status = 1
+          and a.is_deleted = 0
+        order by f.id desc
+    </select>
+
+</mapper>

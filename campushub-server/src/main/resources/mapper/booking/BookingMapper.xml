@@ -151,4 +151,14 @@
           and status = 1
     </update>
 
+    <update id="markBookingBreach">
+        update booking
+        set status = 4,
+            breach_flag = 1,
+            update_time = now()
+        where id = #{id}
+          and status = 1
+          and breach_flag = 0
+    </update>
+
 </mapper>

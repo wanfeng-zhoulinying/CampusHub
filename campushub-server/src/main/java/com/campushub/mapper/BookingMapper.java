@@ -26,4 +26,6 @@ public interface BookingMapper {
     int cancelBooking(@Param("id") Long id, @Param("cancelReason") String cancelReason);
 
     int checkinBooking(@Param("id") Long id);
+
+    int markBookingBreach(@Param("id") Long id);
 }
