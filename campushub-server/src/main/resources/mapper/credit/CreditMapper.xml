@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.campushub.mapper.CreditMapper">
+
+    <insert id="saveCreditRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into credit_record (
+            user_id,
+            change_type,
+            change_score,
+            current_score,
+            reason,
+            business_type,
+            business_id,
+            operator_id
+        ) values (
+            #{userId},
+            #{changeType},
+            #{changeScore},
+            #{currentScore},
+            #{reason},
+            #{businessType},
+            #{businessId},
+            #{operatorId}
+        )
+    </insert>
+
+    <select id="listUserCreditRecords" resultType="com.campushub.vo.CreditRecordVO">
+        select
+            id,
+            change_type,
+            change_score,
+            current_score,
+            reason,
+            business_type,
+            business_id,
+            create_time
+        from credit_record
+        where user_id = #{userId}
+        order by id desc
+    </select>
+
+    <select id="sumUserDeductScore" resultType="java.lang.Integer">
+        select
+            ifnull(sum(change_score), 0)
+        from credit_record
+        where user_id = #{userId}
+          and change_type = 2
+    </select>
+
+    <select id="countUserBookingBreaches" resultType="java.lang.Integer">
+        select
+            count(1)
+        from booking
+        where user_id = #{userId}
+          and breach_flag = 1
+    </select>
+
+    <update id="updateUserCreditScore">
+        update sys_user
+        set credit_score = #{creditScore},
+            update_time = now()
+        where id = #{userId}
+          and is_deleted = 0
+    </update>
+
+</mapper>

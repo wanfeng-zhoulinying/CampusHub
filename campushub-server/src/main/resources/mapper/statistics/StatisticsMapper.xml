@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.campushub.mapper.StatisticsMapper">
+
+    <select id="getDashboardOverview" resultType="com.campushub.vo.AdminDashboardOverviewVO">
+        select
+            (select count(1) from sys_user where is_deleted = 0) as user_count,
+            (select count(1) from venue where is_deleted = 0) as venue_count,
+            (select count(1) from activity where is_deleted = 0) as activity_count,
+            (select count(1) from booking) as booking_count,
+            (select count(1) from message where is_deleted = 0) as message_count,
+            (select count(1) from booking where breach_flag = 1) as breach_booking_count
+    </select>
+
+    <select id="listBookingStatusStats" resultType="com.campushub.vo.AdminBookingStatusStatVO">
+        select
+            status,
+            count(1) as count
+        from booking
+        group by status
+        order by status asc
+    </select>
+
+    <select id="listHotVenues" resultType="com.campushub.vo.AdminHotVenueVO">
+        select
+            b.venue_id as venue_id,
+            v.name as venue_name,
+            count(1) as booking_count
+        from booking b
+        left join venue v on b.venue_id = v.id
+        group by b.venue_id, v.name
+        order by booking_count desc, b.venue_id desc
+        limit #{limit}
+    </select>
+
+    <select id="listHotActivities" resultType="com.campushub.vo.AdminHotActivityVO">
+        select
+            a.id as activity_id,
+            a.title as activity_title,
+            a.current_signup_count as signup_count
+        from activity a
+        where a.is_deleted = 0
+        order by a.current_signup_count desc, a.id desc
+        limit #{limit}
+    </select>
+
+</mapper>
