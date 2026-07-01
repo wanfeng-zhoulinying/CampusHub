@@ -6,6 +6,7 @@ import com.campushub.service.user.UserService;
 import com.campushub.vo.UserInfoVO;
 import com.campushub.vo.UserLoginVO;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/admin")
 @RequiredArgsConstructor
+@Slf4j
 public class AdminAuthController {
 
     private final UserService userService;
@@ -25,6 +27,7 @@ public class AdminAuthController {
      */
     @PostMapping("/login")
     public Result<UserLoginVO> login(@RequestBody UserLoginDTO loginDTO) {
+        log.info("[AdminAuth] login username={}", loginDTO.getUsername());
         return Result.success(userService.adminLogin(loginDTO));
     }
 
@@ -34,6 +37,7 @@ public class AdminAuthController {
      */
     @GetMapping("/me")
     public Result<UserInfoVO> getCurrentAdmin() {
+        log.info("[AdminAuth] me");
         return Result.success(userService.getCurrentAdmin());
     }
 }

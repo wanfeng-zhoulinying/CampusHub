@@ -7,6 +7,7 @@ import com.campushub.service.user.UserService;
 import com.campushub.vo.UserInfoVO;
 import com.campushub.vo.UserLoginVO;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
+@Slf4j
 public class UserController {
 
     private final UserService userService;
@@ -26,6 +28,7 @@ public class UserController {
      */
     @PostMapping("/register")
     public Result<Long> register(@RequestBody UserRegisterDTO registerDTO) {
+        log.info("[User] register username={}", registerDTO.getUsername());
         return Result.success(userService.register(registerDTO));
     }
 
@@ -35,6 +38,7 @@ public class UserController {
      */
     @PostMapping("/login")
     public Result<UserLoginVO> login(@RequestBody UserLoginDTO loginDTO) {
+        log.info("[User] login username={}", loginDTO.getUsername());
         return Result.success(userService.login(loginDTO));
     }
 
@@ -44,6 +48,7 @@ public class UserController {
      */
     @GetMapping("/me")
     public Result<UserInfoVO> getCurrentUser() {
+        log.info("[User] me");
         return Result.success(userService.getCurrentUser());
     }
 }

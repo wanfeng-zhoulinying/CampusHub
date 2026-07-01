@@ -7,6 +7,7 @@ import com.campushub.dto.AdminActivitySaveDTO;
 import com.campushub.service.admin.AdminActivityService;
 import com.campushub.vo.AdminActivityListVO;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +22,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/admin/activity")
 @RequiredArgsConstructor
+@Slf4j
 public class AdminActivityController {
 
     private final AdminActivityService adminActivityService;
@@ -31,6 +33,8 @@ public class AdminActivityController {
      */
     @GetMapping("/list")
     public Result<List<AdminActivityListVO>> listActivities(AdminActivityQueryDTO queryDTO) {
+        log.info("[AdminActivity] list title={}, status={}, auditStatus={}",
+                queryDTO.getTitle(), queryDTO.getStatus(), queryDTO.getAuditStatus());
         return Result.success(adminActivityService.listActivities(queryDTO));
     }
 
@@ -40,6 +44,7 @@ public class AdminActivityController {
      */
     @PostMapping
     public Result<Long> createActivity(@RequestBody AdminActivitySaveDTO saveDTO) {
+        log.info("[AdminActivity] create title={}", saveDTO.getTitle());
         return Result.success(adminActivityService.createActivity(saveDTO));
     }
 
@@ -50,6 +55,7 @@ public class AdminActivityController {
     @PutMapping("/{activityId}")
     public Result<Void> updateActivity(@PathVariable("activityId") Long activityId,
                                        @RequestBody AdminActivitySaveDTO saveDTO) {
+        log.info("[AdminActivity] update activityId={}, title={}", activityId, saveDTO.getTitle());
         adminActivityService.updateActivity(activityId, saveDTO);
         return Result.success();
     }
@@ -61,6 +67,7 @@ public class AdminActivityController {
     @PutMapping("/{activityId}/audit")
     public Result<Void> auditActivity(@PathVariable("activityId") Long activityId,
                                       @RequestBody AdminActivityAuditDTO auditDTO) {
+        log.info("[AdminActivity] audit activityId={}, auditStatus={}", activityId, auditDTO.getAuditStatus());
         adminActivityService.auditActivity(activityId, auditDTO);
         return Result.success();
     }
@@ -72,6 +79,7 @@ public class AdminActivityController {
     @PutMapping("/{activityId}/status")
     public Result<Void> updateActivityStatus(@PathVariable("activityId") Long activityId,
                                              @RequestParam("status") Integer status) {
+        log.info("[AdminActivity] status activityId={}, status={}", activityId, status);
         adminActivityService.updateActivityStatus(activityId, status);
         return Result.success();
     }

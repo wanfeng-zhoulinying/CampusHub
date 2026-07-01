@@ -7,6 +7,7 @@ import com.campushub.vo.AdminDashboardOverviewVO;
 import com.campushub.vo.AdminHotActivityVO;
 import com.campushub.vo.AdminHotVenueVO;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,6 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/admin/statistics")
 @RequiredArgsConstructor
+@Slf4j
 public class AdminStatisticsController {
 
     private final StatisticsService statisticsService;
@@ -26,6 +28,7 @@ public class AdminStatisticsController {
      */
     @GetMapping("/overview")
     public Result<AdminDashboardOverviewVO> getDashboardOverview() {
+        log.info("[AdminStatistics] overview");
         return Result.success(statisticsService.getDashboardOverview());
     }
 
@@ -34,6 +37,7 @@ public class AdminStatisticsController {
      */
     @GetMapping("/booking/status")
     public Result<List<AdminBookingStatusStatVO>> listBookingStatusStats() {
+        log.info("[AdminStatistics] booking status");
         return Result.success(statisticsService.listBookingStatusStats());
     }
 
@@ -42,6 +46,7 @@ public class AdminStatisticsController {
      */
     @GetMapping("/venue/hot")
     public Result<List<AdminHotVenueVO>> listHotVenues(@RequestParam(value = "limit", required = false) Integer limit) {
+        log.info("[AdminStatistics] hot venues limit={}", limit);
         return Result.success(statisticsService.listHotVenues(limit));
     }
 
@@ -50,6 +55,7 @@ public class AdminStatisticsController {
      */
     @GetMapping("/activity/hot")
     public Result<List<AdminHotActivityVO>> listHotActivities(@RequestParam(value = "limit", required = false) Integer limit) {
+        log.info("[AdminStatistics] hot activities limit={}", limit);
         return Result.success(statisticsService.listHotActivities(limit));
     }
 }

@@ -7,6 +7,7 @@ import com.campushub.dto.BookingQueryDTO;
 import com.campushub.service.booking.BookingService;
 import com.campushub.vo.BookingListVO;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +21,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/booking")
 @RequiredArgsConstructor
+@Slf4j
 public class BookingController {
 
     private final BookingService bookingService;
@@ -30,6 +32,8 @@ public class BookingController {
      */
     @PostMapping("/create")
     public Result<Long> createBooking(@RequestBody BookingCreateDTO createDTO) {
+        log.info("[Booking] create venueId={}, slotId={}, bookingDate={}, personCount={}",
+                createDTO.getVenueId(), createDTO.getSlotId(), createDTO.getBookingDate(), createDTO.getPersonCount());
         return Result.success(bookingService.createBooking(createDTO));
     }
 
@@ -39,6 +43,7 @@ public class BookingController {
      */
     @GetMapping("/my")
     public Result<List<BookingListVO>> listMyBookings(BookingQueryDTO queryDTO) {
+        log.info("[Booking] my bookings status={}", queryDTO.getStatus());
         return Result.success(bookingService.listMyBookings(queryDTO));
     }
 
@@ -48,6 +53,7 @@ public class BookingController {
      */
     @PutMapping("/{bookingId}/cancel")
     public Result<Void> cancelBooking(@PathVariable("bookingId") Long bookingId, @RequestBody BookingCancelDTO cancelDTO) {
+        log.info("[Booking] cancel bookingId={}", bookingId);
         bookingService.cancelBooking(bookingId, cancelDTO);
         return Result.success();
     }
@@ -58,6 +64,7 @@ public class BookingController {
      */
     @PutMapping("/{bookingId}/checkin")
     public Result<Void> checkinBooking(@PathVariable("bookingId") Long bookingId) {
+        log.info("[Booking] checkin bookingId={}", bookingId);
         bookingService.checkinBooking(bookingId);
         return Result.success();
     }

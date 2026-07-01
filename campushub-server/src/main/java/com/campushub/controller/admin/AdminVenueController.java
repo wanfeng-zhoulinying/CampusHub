@@ -6,6 +6,7 @@ import com.campushub.dto.AdminVenueSaveDTO;
 import com.campushub.service.admin.AdminVenueService;
 import com.campushub.vo.AdminVenueListVO;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +21,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/admin/venue")
 @RequiredArgsConstructor
+@Slf4j
 public class AdminVenueController {
 
     private final AdminVenueService adminVenueService;
@@ -30,6 +32,8 @@ public class AdminVenueController {
      */
     @GetMapping("/list")
     public Result<List<AdminVenueListVO>> listVenues(AdminVenueQueryDTO queryDTO) {
+        log.info("[AdminVenue] list name={}, category={}, status={}",
+                queryDTO.getName(), queryDTO.getCategory(), queryDTO.getStatus());
         return Result.success(adminVenueService.listVenues(queryDTO));
     }
 
@@ -39,6 +43,7 @@ public class AdminVenueController {
      */
     @PostMapping
     public Result<Long> createVenue(@RequestBody AdminVenueSaveDTO saveDTO) {
+        log.info("[AdminVenue] create name={}", saveDTO.getName());
         return Result.success(adminVenueService.createVenue(saveDTO));
     }
 
@@ -48,6 +53,7 @@ public class AdminVenueController {
      */
     @PutMapping("/{venueId}")
     public Result<Void> updateVenue(@PathVariable("venueId") Long venueId, @RequestBody AdminVenueSaveDTO saveDTO) {
+        log.info("[AdminVenue] update venueId={}, name={}", venueId, saveDTO.getName());
         adminVenueService.updateVenue(venueId, saveDTO);
         return Result.success();
     }
@@ -59,6 +65,7 @@ public class AdminVenueController {
     @PutMapping("/{venueId}/status")
     public Result<Void> updateVenueStatus(@PathVariable("venueId") Long venueId,
                                           @RequestParam("status") Integer status) {
+        log.info("[AdminVenue] status venueId={}, status={}", venueId, status);
         adminVenueService.updateVenueStatus(venueId, status);
         return Result.success();
     }

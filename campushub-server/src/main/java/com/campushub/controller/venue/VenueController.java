@@ -7,6 +7,7 @@ import com.campushub.vo.VenueDetailVO;
 import com.campushub.vo.VenueListVO;
 import com.campushub.vo.VenueSlotVO;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +21,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/venue")
 @RequiredArgsConstructor
+@Slf4j
 public class VenueController {
 
     private final VenueService venueService;
@@ -30,6 +32,8 @@ public class VenueController {
      */
     @GetMapping("/list")
     public Result<List<VenueListVO>> listVenues(VenueQueryDTO queryDTO) {
+        log.info("[Venue] list category={}, keyword={}, status={}",
+                queryDTO.getCategory(), queryDTO.getKeyword(), queryDTO.getStatus());
         return Result.success(venueService.listVenues(queryDTO));
     }
 
@@ -39,6 +43,7 @@ public class VenueController {
      */
     @GetMapping("/{venueId}")
     public Result<VenueDetailVO> getVenueDetail(@PathVariable("venueId") Long venueId) {
+        log.info("[Venue] detail venueId={}", venueId);
         return Result.success(venueService.getVenueDetail(venueId));
     }
 
@@ -50,6 +55,7 @@ public class VenueController {
     public Result<List<VenueSlotVO>> listVenueSlots(
             @PathVariable("venueId") Long venueId,
             @RequestParam("date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
+        log.info("[Venue] slots venueId={}, date={}", venueId, date);
         return Result.success(venueService.listVenueSlots(venueId, date));
     }
 }

@@ -4,6 +4,7 @@ import com.campushub.common.Result;
 import com.campushub.service.message.MessageService;
 import com.campushub.vo.MessageVO;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -16,6 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/message")
 @RequiredArgsConstructor
+@Slf4j
 public class MessageController {
 
     private final MessageService messageService;
@@ -26,6 +28,7 @@ public class MessageController {
      */
     @GetMapping("/my")
     public Result<List<MessageVO>> listMyMessages(@RequestParam(value = "readStatus", required = false) Integer readStatus) {
+        log.info("[Message] my messages readStatus={}", readStatus);
         return Result.success(messageService.listMyMessages(readStatus));
     }
 
@@ -35,6 +38,7 @@ public class MessageController {
      */
     @PutMapping("/{messageId}/read")
     public Result<Void> markAsRead(@PathVariable("messageId") Long messageId) {
+        log.info("[Message] mark read messageId={}", messageId);
         messageService.markAsRead(messageId);
         return Result.success();
     }
@@ -45,6 +49,7 @@ public class MessageController {
      */
     @GetMapping("/unread/count")
     public Result<Integer> countMyUnreadMessages() {
+        log.info("[Message] unread count");
         return Result.success(messageService.countMyUnreadMessages());
     }
 }
