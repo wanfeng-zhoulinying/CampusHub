@@ -144,7 +144,7 @@
             cancel_time = now(),
             update_time = now()
         where id = #{id}
-          and signup_status = 1
+          and signup_status in (1, 3, 4)
     </update>
 
     <update id="increaseSignupCount">
@@ -196,8 +196,53 @@
             sign_time = now(),
             update_time = now()
         where id = #{id}
-          and signup_status = 1
+          and signup_status in (1, 4)
           and sign_status = 0
+    </update>
+
+    <select id="countWaitlistedSignups" resultType="java.lang.Integer">
+        select count(1)
+        from activity_signup
+        where activity_id = #{activityId}
+          and signup_status = 3
+    </select>
+
+    <select id="getFirstWaitlistedSignup" resultType="com.campushub.entity.ActivitySignup">
+        select
+            id,
+            activity_id,
+            user_id,
+            signup_time,
+            signup_status,
+            sign_status,
+            sign_time,
+            cancel_time,
+            wait_order,
+            create_time,
+            update_time
+        from activity_signup
+        where activity_id = #{activityId}
+          and signup_status = 3
+        order by wait_order asc, id asc
+        limit 1
+    </select>
+
+    <update id="promoteWaitlistedSignup">
+        update activity_signup
+        set signup_status = 4,
+            wait_order = null,
+            update_time = now()
+        where id = #{id}
+          and signup_status = 3
+    </update>
+
+    <update id="adjustWaitlistOrderAfterRemoval">
+        update activity_signup
+        set wait_order = wait_order - 1,
+            update_time = now()
+        where activity_id = #{activityId}
+          and signup_status = 3
+          and wait_order &gt; #{waitOrder}
     </update>
 
     <select id="listAdminActivities" resultType="com.campushub.vo.AdminActivityListVO">

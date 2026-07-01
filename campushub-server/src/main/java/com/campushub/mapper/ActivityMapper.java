@@ -40,6 +40,14 @@ public interface ActivityMapper {
 
     int signActivity(@Param("id") Long id);
 
+    Integer countWaitlistedSignups(@Param("activityId") Long activityId);
+
+    ActivitySignup getFirstWaitlistedSignup(@Param("activityId") Long activityId);
+
+    int promoteWaitlistedSignup(@Param("id") Long id);
+
+    int adjustWaitlistOrderAfterRemoval(@Param("activityId") Long activityId, @Param("waitOrder") Integer waitOrder);
+
     List<AdminActivityListVO> listAdminActivities(@Param("title") String title,
                                                   @Param("status") Integer status,
                                                   @Param("auditStatus") Integer auditStatus);
