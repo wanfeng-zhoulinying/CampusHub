@@ -32,8 +32,8 @@ public class BookingController {
      */
     @PostMapping("/create")
     public Result<Long> createBooking(@RequestBody BookingCreateDTO createDTO) {
-        log.info("[Booking] create venueId={}, slotId={}, bookingDate={}, personCount={}",
-                createDTO.getVenueId(), createDTO.getSlotId(), createDTO.getBookingDate(), createDTO.getPersonCount());
+        log.info("[Booking] create venueId={}, slotId={}, personCount={}",
+                createDTO.getVenueId(), createDTO.getSlotId(), createDTO.getPersonCount());
         return Result.success(bookingService.createBooking(createDTO));
     }
 

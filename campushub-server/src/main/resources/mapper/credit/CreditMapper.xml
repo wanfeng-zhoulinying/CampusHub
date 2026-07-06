@@ -65,4 +65,138 @@
           and is_deleted = 0
     </update>
 
+    <select id="getUserDeductScoreByBusiness" resultType="java.lang.Integer">
+        select
+            change_score
+        from credit_record
+        where user_id = #{userId}
+          and business_type = #{businessType}
+          and business_id = #{businessId}
+          and change_type = 2
+        order by id desc
+        limit 1
+    </select>
+
+    <insert id="saveBookingBreachAppeal" useGeneratedKeys="true" keyProperty="id">
+        insert into booking_breach_appeal (
+            booking_id,
+            user_id,
+            reason,
+            appeal_status,
+            deduct_score,
+            audit_remark,
+            audit_user_id,
+            audit_time,
+            is_deleted
+        ) values (
+            #{bookingId},
+            #{userId},
+            #{reason},
+            #{appealStatus},
+            #{deductScore},
+            #{auditRemark},
+            #{auditUserId},
+            #{auditTime},
+            #{isDeleted}
+        )
+    </insert>
+
+    <select id="getBookingBreachAppealById" resultType="com.campushub.entity.BookingBreachAppeal">
+        select
+            id,
+            booking_id,
+            user_id,
+            reason,
+            appeal_status,
+            deduct_score,
+            audit_remark,
+            audit_user_id,
+            audit_time,
+            is_deleted,
+            create_time,
+            update_time
+        from booking_breach_appeal
+        where id = #{id}
+          and is_deleted = 0
+        limit 1
+    </select>
+
+    <select id="getBookingBreachAppealByBookingId" resultType="com.campushub.entity.BookingBreachAppeal">
+        select
+            id,
+            booking_id,
+            user_id,
+            reason,
+            appeal_status,
+            deduct_score,
+            audit_remark,
+            audit_user_id,
+            audit_time,
+            is_deleted,
+            create_time,
+            update_time
+        from booking_breach_appeal
+        where booking_id = #{bookingId}
+          and is_deleted = 0
+        limit 1
+    </select>
+
+    <select id="listUserBookingBreachAppeals" resultType="com.campushub.vo.BookingBreachAppealVO">
+        select
+            a.id,
+            a.booking_id,
+            b.booking_no,
+            a.reason,
+            a.appeal_status,
+            a.deduct_score,
+            a.audit_remark,
+            a.create_time as appeal_time,
+            a.audit_time
+        from booking_breach_appeal a
+        left join booking b on a.booking_id = b.id
+        where a.user_id = #{userId}
+          and a.is_deleted = 0
+        <if test="appealStatus != null">
+            and a.appeal_status = #{appealStatus}
+        </if>
+        order by a.id desc
+    </select>
+
+    <select id="listAdminBookingBreachAppeals" resultType="com.campushub.vo.AdminBookingBreachAppealVO">
+        select
+            a.id,
+            a.booking_id,
+            b.booking_no,
+            a.user_id,
+            u.username,
+            u.real_name,
+            a.reason,
+            a.appeal_status,
+            a.deduct_score,
+            a.audit_remark,
+            a.audit_user_id,
+            a.create_time as appeal_time,
+            a.audit_time
+        from booking_breach_appeal a
+        left join booking b on a.booking_id = b.id
+        left join sys_user u on a.user_id = u.id
+        where a.is_deleted = 0
+        <if test="appealStatus != null">
+            and a.appeal_status = #{appealStatus}
+        </if>
+        order by a.id desc
+    </select>
+
+    <update id="auditBookingBreachAppeal">
+        update booking_breach_appeal
+        set appeal_status = #{appealStatus},
+            audit_remark = #{auditRemark},
+            audit_user_id = #{auditUserId},
+            audit_time = now(),
+            update_time = now()
+        where id = #{id}
+          and appeal_status = 0
+          and is_deleted = 0
+    </update>
+
 </mapper>

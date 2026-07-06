@@ -161,4 +161,14 @@
           and breach_flag = 0
     </update>
 
+    <update id="revertBookingBreach">
+        update booking
+        set status = 5,
+            breach_flag = 0,
+            update_time = now()
+        where id = #{id}
+          and status = 4
+          and breach_flag = 1
+    </update>
+
 </mapper>

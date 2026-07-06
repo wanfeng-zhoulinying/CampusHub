@@ -4,13 +4,23 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8b2107f5-00f7-4698-b1e4-557ee2aa8d8e" name="更改" comment="statistics">
-      <change afterPath="$PROJECT_DIR$/src/main/resources/sql/activity/wait_order_test.sql" afterDir="false" />
+    <list default="true" id="8b2107f5-00f7-4698-b1e4-557ee2aa8d8e" name="更改" comment="slf4j，对各种id进行标识">
+      <change afterPath="$PROJECT_DIR$/src/main/resources/sql/credit/breach_appeal_dataTest.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/139c363b-cd85-4912-8061-73dcfb046c07.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/139c363b-cd85-4912-8061-73dcfb046c07.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/sqldialects.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/mapper/ActivityMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/mapper/ActivityMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/activity/ActivityServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/activity/ActivityServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/mapper/activity/ActivityMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/mapper/activity/ActivityMapper.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/constant/BookingStatusConstant.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/constant/BookingStatusConstant.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/constant/CreditBusinessTypeConstant.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/constant/CreditBusinessTypeConstant.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/controller/admin/AdminCreditController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/controller/admin/AdminCreditController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/controller/booking/BookingController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/controller/booking/BookingController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/controller/credit/CreditController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/controller/credit/CreditController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/mapper/BookingMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/mapper/BookingMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/mapper/CreditMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/mapper/CreditMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/credit/CreditService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/credit/CreditService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/credit/CreditServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/credit/CreditServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/mapper/booking/BookingMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/mapper/booking/BookingMapper.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/mapper/credit/CreditMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/mapper/credit/CreditMapper.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -130,7 +140,10 @@
       <workItem from="1782742843085" duration="2750000" />
       <workItem from="1782749090628" duration="816000" />
       <workItem from="1782825050029" duration="4589000" />
-      <workItem from="1782890108761" duration="10951000" />
+      <workItem from="1782890108761" duration="11673000" />
+      <workItem from="1782957713135" duration="5771000" />
+      <workItem from="1783167718317" duration="1290000" />
+      <workItem from="1783336169168" duration="2809000" />
     </task>
     <task id="LOCAL-00001" summary="venue功能实现">
       <option name="closed" value="true" />
@@ -260,7 +273,23 @@
       <option name="project" value="LOCAL" />
       <updated>1782895655590</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="活动候补补位增强">
+      <option name="closed" value="true" />
+      <created>1782920812262</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1782920812262</updated>
+    </task>
+    <task id="LOCAL-00018" summary="slf4j，对各种id进行标识">
+      <option name="closed" value="true" />
+      <created>1782920888761</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1782920888761</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -295,6 +324,8 @@
     <MESSAGE value="social模块" />
     <MESSAGE value="credit模块" />
     <MESSAGE value="statistics" />
-    <option name="LAST_COMMIT_MESSAGE" value="statistics" />
+    <MESSAGE value="活动候补补位增强" />
+    <MESSAGE value="slf4j，对各种id进行标识" />
+    <option name="LAST_COMMIT_MESSAGE" value="slf4j，对各种id进行标识" />
   </component>
 </project>

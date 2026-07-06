@@ -28,4 +28,6 @@ public interface BookingMapper {
     int checkinBooking(@Param("id") Long id);
 
     int markBookingBreach(@Param("id") Long id);
+
+    int revertBookingBreach(@Param("id") Long id);
 }
