@@ -19,6 +19,8 @@ public interface CreditMapper {
 
     Integer sumUserDeductScore(@Param("userId") Long userId);
 
+    Integer sumUserRestoreScore(@Param("userId") Long userId);
+
     Integer countUserBookingBreaches(@Param("userId") Long userId);
 
     int updateUserCreditScore(@Param("userId") Long userId, @Param("creditScore") Integer creditScore);

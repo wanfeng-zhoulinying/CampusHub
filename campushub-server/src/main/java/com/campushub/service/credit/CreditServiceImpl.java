@@ -47,11 +47,15 @@ public class CreditServiceImpl implements CreditService {
     public CreditOverviewVO getMyCreditOverview() {
         Long currentUserId = getCurrentUserId();
         SysUser user = getValidUser(currentUserId);
+        Integer totalDeductScore = creditMapper.sumUserDeductScore(currentUserId);
+        Integer totalRestoreScore = creditMapper.sumUserRestoreScore(currentUserId);
 
         CreditOverviewVO overviewVO = new CreditOverviewVO();
         overviewVO.setUserId(currentUserId);
         overviewVO.setCreditScore(user.getCreditScore());
-        overviewVO.setTotalDeductScore(creditMapper.sumUserDeductScore(currentUserId));
+        overviewVO.setTotalDeductScore(totalDeductScore);
+        overviewVO.setTotalRestoreScore(totalRestoreScore);
+        overviewVO.setNetDeductScore(totalDeductScore - totalRestoreScore);
         overviewVO.setBreachCount(creditMapper.countUserBookingBreaches(currentUserId));
         return overviewVO;
     }

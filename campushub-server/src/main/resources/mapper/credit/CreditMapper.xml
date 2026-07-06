@@ -49,6 +49,14 @@
           and change_type = 2
     </select>
 
+    <select id="sumUserRestoreScore" resultType="java.lang.Integer">
+        select
+            ifnull(sum(change_score), 0)
+        from credit_record
+        where user_id = #{userId}
+          and change_type = 1
+    </select>
+
     <select id="countUserBookingBreaches" resultType="java.lang.Integer">
         select
             count(1)
