@@ -62,4 +62,12 @@ public interface ActivityMapper {
                       @Param("auditUserId") Long auditUserId);
 
     int updateActivityStatus(@Param("activityId") Long activityId, @Param("status") Integer status);
+
+    int startSignupActivities();
+
+    int finishSignupActivities();
+
+    int startInProgressActivities();
+
+    int finishActivities();
 }

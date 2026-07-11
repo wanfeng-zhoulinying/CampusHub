@@ -8,6 +8,7 @@ public final class ActivityStatusConstant {
     public static final Integer IN_PROGRESS = 3;
     public static final Integer FINISHED = 4;
     public static final Integer CANCELED = 5;
+    public static final Integer SIGNUP_ENDED = 6;
 
     private ActivityStatusConstant() {
     }

@@ -4,13 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8b2107f5-00f7-4698-b1e4-557ee2aa8d8e" name="更改" comment="信用分概览口径优化">
-      <change afterPath="$PROJECT_DIR$/src/main/resources/sql/user/creditscore_limit.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sqldialects.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
+    <list default="true" id="8b2107f5-00f7-4698-b1e4-557ee2aa8d8e" name="更改" comment="信用分对活动和预约限制模块">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/constant/CreditRuleConstant.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/constant/CreditRuleConstant.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/activity/ActivityServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/activity/ActivityServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/booking/BookingServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/booking/BookingServiceImpl.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -135,7 +130,7 @@
       <workItem from="1783167718317" duration="1290000" />
       <workItem from="1783336169168" duration="2859000" />
       <workItem from="1783347102584" duration="1567000" />
-      <workItem from="1783771467010" duration="2750000" />
+      <workItem from="1783771467010" duration="4433000" />
     </task>
     <task id="LOCAL-00001" summary="venue功能实现">
       <option name="closed" value="true" />
@@ -297,7 +292,15 @@
       <option name="project" value="LOCAL" />
       <updated>1783347984164</updated>
     </task>
-    <option name="localTasksCounter" value="21" />
+    <task id="LOCAL-00021" summary="信用分对活动和预约限制模块">
+      <option name="closed" value="true" />
+      <created>1783774275484</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1783774275484</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -336,6 +339,7 @@
     <MESSAGE value="slf4j，对各种id进行标识" />
     <MESSAGE value="违约申诉与审核流" />
     <MESSAGE value="信用分概览口径优化" />
-    <option name="LAST_COMMIT_MESSAGE" value="信用分概览口径优化" />
+    <MESSAGE value="信用分对活动和预约限制模块" />
+    <option name="LAST_COMMIT_MESSAGE" value="信用分对活动和预约限制模块" />
   </component>
 </project>

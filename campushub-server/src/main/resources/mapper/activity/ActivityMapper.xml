@@ -351,4 +351,47 @@
           and is_deleted = 0
     </update>
 
+    <update id="startSignupActivities">
+        update activity
+        set status = 2,
+            update_time = now()
+        where status = 1
+          and audit_status = 1
+          and is_deleted = 0
+          and signup_start_time &lt;= now()
+          and signup_end_time &gt; now()
+    </update>
+
+    <update id="finishSignupActivities">
+        update activity
+        set status = 6,
+            update_time = now()
+        where status = 2
+          and audit_status = 1
+          and is_deleted = 0
+          and signup_end_time &lt;= now()
+          and activity_start_time &gt; now()
+    </update>
+
+    <update id="startInProgressActivities">
+        update activity
+        set status = 3,
+            update_time = now()
+        where status in (1, 2, 6)
+          and audit_status = 1
+          and is_deleted = 0
+          and activity_start_time &lt;= now()
+          and activity_end_time &gt; now()
+    </update>
+
+    <update id="finishActivities">
+        update activity
+        set status = 4,
+            update_time = now()
+        where status in (1, 2, 3, 6)
+          and audit_status = 1
+          and is_deleted = 0
+          and activity_end_time &lt;= now()
+    </update>
+
 </mapper>
