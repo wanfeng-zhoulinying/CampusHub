@@ -4,14 +4,17 @@ import com.campushub.constant.ActivityAuditStatusConstant;
 import com.campushub.constant.ActivitySignStatusConstant;
 import com.campushub.constant.ActivitySignupStatusConstant;
 import com.campushub.constant.ActivityStatusConstant;
+import com.campushub.constant.CreditRuleConstant;
 import com.campushub.constant.MessageTypeConstant;
 import com.campushub.dto.ActivityQueryDTO;
 import com.campushub.dto.ActivitySignupDTO;
 import com.campushub.dto.ActivitySignupQueryDTO;
 import com.campushub.entity.Activity;
 import com.campushub.entity.ActivitySignup;
+import com.campushub.entity.SysUser;
 import com.campushub.exception.BusinessException;
 import com.campushub.mapper.ActivityMapper;
+import com.campushub.mapper.UserMapper;
 import com.campushub.service.message.MessageService;
 import com.campushub.utils.UserContext;
 import com.campushub.vo.ActivityDetailVO;
@@ -29,6 +32,7 @@ import java.util.List;
 public class ActivityServiceImpl implements ActivityService {
 
     private final ActivityMapper activityMapper;
+    private final UserMapper userMapper;
     private final MessageService messageService;
 
     /**
@@ -56,6 +60,7 @@ public class ActivityServiceImpl implements ActivityService {
     @Transactional(rollbackFor = Exception.class)
     public Long signupActivity(ActivitySignupDTO signupDTO) {
         Long currentUserId = getCurrentUserId();
+        validateActivitySignupCreditScore(currentUserId);
         if (signupDTO.getActivityId() == null) {
             throw new BusinessException("activityId不能为空");
         }
@@ -264,5 +269,16 @@ public class ActivityServiceImpl implements ActivityService {
             throw new BusinessException("请先登录");
         }
         return currentUserId;
+    }
+
+    private void validateActivitySignupCreditScore(Long userId) {
+        SysUser user = userMapper.getById(userId);
+        if (user == null) {
+            throw new BusinessException("当前用户不存在");
+        }
+        Integer creditScore = user.getCreditScore() == null ? CreditRuleConstant.MIN_SCORE : user.getCreditScore();
+        if (creditScore < CreditRuleConstant.ACTIVITY_SIGNUP_MIN_SCORE) {
+            throw new BusinessException("当前信用分过低，暂不可报名活动");
+        }
     }
 }

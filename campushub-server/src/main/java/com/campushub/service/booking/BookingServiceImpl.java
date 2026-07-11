@@ -2,15 +2,18 @@ package com.campushub.service.booking;
 
 import com.campushub.constant.BookingBreachFlagConstant;
 import com.campushub.constant.BookingStatusConstant;
+import com.campushub.constant.CreditRuleConstant;
 import com.campushub.constant.MessageTypeConstant;
 import com.campushub.constant.VenueSlotStatusConstant;
 import com.campushub.dto.BookingCancelDTO;
 import com.campushub.dto.BookingCreateDTO;
 import com.campushub.dto.BookingQueryDTO;
 import com.campushub.entity.Booking;
+import com.campushub.entity.SysUser;
 import com.campushub.entity.VenueSlot;
 import com.campushub.exception.BusinessException;
 import com.campushub.mapper.BookingMapper;
+import com.campushub.mapper.UserMapper;
 import com.campushub.service.message.MessageService;
 import com.campushub.utils.UserContext;
 import com.campushub.vo.BookingListVO;
@@ -30,6 +33,7 @@ public class BookingServiceImpl implements BookingService {
     private static final DateTimeFormatter BOOKING_NO_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
     private final BookingMapper bookingMapper;
+    private final UserMapper userMapper;
     private final MessageService messageService;
 
     /**
@@ -40,6 +44,7 @@ public class BookingServiceImpl implements BookingService {
     @Transactional(rollbackFor = Exception.class)
     public Long createBooking(BookingCreateDTO createDTO) {
         Long currentUserId = getCurrentUserId();
+        validateBookingCreditScore(currentUserId);
         if (createDTO.getVenueId() == null || createDTO.getSlotId() == null) {
             throw new BusinessException("场地或时间段不能为空");
         }
@@ -186,5 +191,16 @@ public class BookingServiceImpl implements BookingService {
             throw new BusinessException("请先登录");
         }
         return currentUserId;
+    }
+
+    private void validateBookingCreditScore(Long userId) {
+        SysUser user = userMapper.getById(userId);
+        if (user == null) {
+            throw new BusinessException("当前用户不存在");
+        }
+        Integer creditScore = user.getCreditScore() == null ? CreditRuleConstant.MIN_SCORE : user.getCreditScore();
+        if (creditScore < CreditRuleConstant.BOOKING_MIN_SCORE) {
+            throw new BusinessException("当前信用分过低，暂不可预约场地");
+        }
     }
 }

@@ -5,6 +5,8 @@ public final class CreditRuleConstant {
 
     public static final Integer DEFAULT_SCORE = 100;
     public static final Integer BOOKING_BREACH_DEDUCT_SCORE = 10;
+    public static final Integer BOOKING_MIN_SCORE = 60;
+    public static final Integer ACTIVITY_SIGNUP_MIN_SCORE = 60;
     public static final Integer MIN_SCORE = 0;
 
     private CreditRuleConstant() {
