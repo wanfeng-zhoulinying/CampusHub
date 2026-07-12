@@ -32,7 +32,7 @@ public class VenueController {
      */
     @GetMapping("/list")
     public Result<List<VenueListVO>> listVenues(VenueQueryDTO queryDTO) {
-        log.info("[Venue] list category={}, keyword={}, status={}",
+        log.info("[Venue] 查询场地列表 category={}, keyword={}, status={}",
                 queryDTO.getCategory(), queryDTO.getKeyword(), queryDTO.getStatus());
         return Result.success(venueService.listVenues(queryDTO));
     }
@@ -43,7 +43,7 @@ public class VenueController {
      */
     @GetMapping("/{venueId}")
     public Result<VenueDetailVO> getVenueDetail(@PathVariable("venueId") Long venueId) {
-        log.info("[Venue] detail venueId={}", venueId);
+        log.info("[Venue] 查询场地详情 venueId={}", venueId);
         return Result.success(venueService.getVenueDetail(venueId));
     }
 
@@ -55,7 +55,7 @@ public class VenueController {
     public Result<List<VenueSlotVO>> listVenueSlots(
             @PathVariable("venueId") Long venueId,
             @RequestParam("date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
-        log.info("[Venue] slots venueId={}, date={}", venueId, date);
+        log.info("[Venue] 查询场地时间段 venueId={}, date={}", venueId, date);
         return Result.success(venueService.listVenueSlots(venueId, date));
     }
 }

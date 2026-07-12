@@ -28,7 +28,7 @@ public class UserController {
      */
     @PostMapping("/register")
     public Result<Long> register(@RequestBody UserRegisterDTO registerDTO) {
-        log.info("[User] register username={}", registerDTO.getUsername());
+        log.info("[User] 用户注册 username={}", registerDTO.getUsername());
         return Result.success(userService.register(registerDTO));
     }
 
@@ -38,7 +38,7 @@ public class UserController {
      */
     @PostMapping("/login")
     public Result<UserLoginVO> login(@RequestBody UserLoginDTO loginDTO) {
-        log.info("[User] login username={}", loginDTO.getUsername());
+        log.info("[User] 用户登录 username={}", loginDTO.getUsername());
         return Result.success(userService.login(loginDTO));
     }
 
@@ -48,7 +48,7 @@ public class UserController {
      */
     @GetMapping("/me")
     public Result<UserInfoVO> getCurrentUser() {
-        log.info("[User] me");
+        log.info("[User] 查询当前登录用户信息");
         return Result.success(userService.getCurrentUser());
     }
 }

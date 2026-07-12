@@ -32,7 +32,7 @@ public class AdminVenueController {
      */
     @GetMapping("/list")
     public Result<List<AdminVenueListVO>> listVenues(AdminVenueQueryDTO queryDTO) {
-        log.info("[AdminVenue] list name={}, category={}, status={}",
+        log.info("[AdminVenue] 查询后台场地列表 name={}, category={}, status={}",
                 queryDTO.getName(), queryDTO.getCategory(), queryDTO.getStatus());
         return Result.success(adminVenueService.listVenues(queryDTO));
     }
@@ -43,7 +43,7 @@ public class AdminVenueController {
      */
     @PostMapping
     public Result<Long> createVenue(@RequestBody AdminVenueSaveDTO saveDTO) {
-        log.info("[AdminVenue] create name={}", saveDTO.getName());
+        log.info("[AdminVenue] 后台新增场地 name={}", saveDTO.getName());
         return Result.success(adminVenueService.createVenue(saveDTO));
     }
 
@@ -53,7 +53,7 @@ public class AdminVenueController {
      */
     @PutMapping("/{venueId}")
     public Result<Void> updateVenue(@PathVariable("venueId") Long venueId, @RequestBody AdminVenueSaveDTO saveDTO) {
-        log.info("[AdminVenue] update venueId={}, name={}", venueId, saveDTO.getName());
+        log.info("[AdminVenue] 后台修改场地 venueId={}, name={}", venueId, saveDTO.getName());
         adminVenueService.updateVenue(venueId, saveDTO);
         return Result.success();
     }
@@ -65,7 +65,7 @@ public class AdminVenueController {
     @PutMapping("/{venueId}/status")
     public Result<Void> updateVenueStatus(@PathVariable("venueId") Long venueId,
                                           @RequestParam("status") Integer status) {
-        log.info("[AdminVenue] status venueId={}, status={}", venueId, status);
+        log.info("[AdminVenue] 后台修改场地状态 venueId={}, status={}", venueId, status);
         adminVenueService.updateVenueStatus(venueId, status);
         return Result.success();
     }

@@ -29,7 +29,7 @@ public class SocialController {
      */
     @PostMapping("/activity/comment")
     public Result<Long> createActivityComment(@RequestBody ActivityCommentCreateDTO createDTO) {
-        log.info("[Social] create comment activityId={}", createDTO.getActivityId());
+        log.info("[Social] 发布活动评论 activityId={}", createDTO.getActivityId());
         return Result.success(socialService.createActivityComment(createDTO));
     }
 
@@ -38,7 +38,7 @@ public class SocialController {
      */
     @GetMapping("/activity/{activityId}/comments")
     public Result<List<ActivityCommentVO>> listActivityComments(@PathVariable("activityId") Long activityId) {
-        log.info("[Social] comments activityId={}", activityId);
+        log.info("[Social] 查询活动评论列表 activityId={}", activityId);
         return Result.success(socialService.listActivityComments(activityId));
     }
 
@@ -47,7 +47,7 @@ public class SocialController {
      */
     @PostMapping("/comment/{commentId}/like")
     public Result<Boolean> toggleCommentLike(@PathVariable("commentId") Long commentId) {
-        log.info("[Social] toggle comment like commentId={}", commentId);
+        log.info("[Social] 切换评论点赞状态 commentId={}", commentId);
         return Result.success(socialService.toggleCommentLike(commentId));
     }
 
@@ -56,7 +56,7 @@ public class SocialController {
      */
     @PostMapping("/activity/{activityId}/favorite")
     public Result<Boolean> toggleActivityFavorite(@PathVariable("activityId") Long activityId) {
-        log.info("[Social] toggle activity favorite activityId={}", activityId);
+        log.info("[Social] 切换活动收藏状态 activityId={}", activityId);
         return Result.success(socialService.toggleActivityFavorite(activityId));
     }
 
@@ -65,7 +65,7 @@ public class SocialController {
      */
     @GetMapping("/activity/favorites/my")
     public Result<List<ActivityFavoriteVO>> listMyFavorites() {
-        log.info("[Social] my favorites");
+        log.info("[Social] 查询我的活动收藏列表");
         return Result.success(socialService.listMyFavorites());
     }
 }

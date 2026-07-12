@@ -28,7 +28,7 @@ public class MessageController {
      */
     @GetMapping("/my")
     public Result<List<MessageVO>> listMyMessages(@RequestParam(value = "readStatus", required = false) Integer readStatus) {
-        log.info("[Message] my messages readStatus={}", readStatus);
+        log.info("[Message] 查询我的消息列表 readStatus={}", readStatus);
         return Result.success(messageService.listMyMessages(readStatus));
     }
 
@@ -38,7 +38,7 @@ public class MessageController {
      */
     @PutMapping("/{messageId}/read")
     public Result<Void> markAsRead(@PathVariable("messageId") Long messageId) {
-        log.info("[Message] mark read messageId={}", messageId);
+        log.info("[Message] 标记消息已读 messageId={}", messageId);
         messageService.markAsRead(messageId);
         return Result.success();
     }
@@ -49,7 +49,7 @@ public class MessageController {
      */
     @GetMapping("/unread/count")
     public Result<Integer> countMyUnreadMessages() {
-        log.info("[Message] unread count");
+        log.info("[Message] 查询未读消息数量");
         return Result.success(messageService.countMyUnreadMessages());
     }
 }

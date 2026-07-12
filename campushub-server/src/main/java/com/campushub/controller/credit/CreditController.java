@@ -31,7 +31,7 @@ public class CreditController {
      */
     @GetMapping("/my")
     public Result<CreditOverviewVO> getMyCreditOverview() {
-        log.info("[Credit] my overview");
+        log.info("[Credit] 查询我的信用分概览");
         return Result.success(creditService.getMyCreditOverview());
     }
 
@@ -40,7 +40,7 @@ public class CreditController {
      */
     @GetMapping("/records/my")
     public Result<List<CreditRecordVO>> listMyCreditRecords() {
-        log.info("[Credit] my records");
+        log.info("[Credit] 查询我的信用分记录");
         return Result.success(creditService.listMyCreditRecords());
     }
 
@@ -50,7 +50,7 @@ public class CreditController {
     @PostMapping("/booking/{bookingId}/appeal")
     public Result<Long> createBookingBreachAppeal(@PathVariable("bookingId") Long bookingId,
                                                   @RequestBody BookingBreachAppealCreateDTO createDTO) {
-        log.info("[Credit] create appeal bookingId={}", bookingId);
+        log.info("[Credit] 提交预约违约申诉 bookingId={}", bookingId);
         return Result.success(creditService.createBookingBreachAppeal(bookingId, createDTO));
     }
 
@@ -60,7 +60,7 @@ public class CreditController {
     @GetMapping("/appeals/my")
     public Result<List<BookingBreachAppealVO>> listMyBookingBreachAppeals(
             @RequestParam(value = "appealStatus", required = false) Integer appealStatus) {
-        log.info("[Credit] my appeals appealStatus={}", appealStatus);
+        log.info("[Credit] 查询我的违约申诉列表 appealStatus={}", appealStatus);
         return Result.success(creditService.listMyBookingBreachAppeals(appealStatus));
     }
 }

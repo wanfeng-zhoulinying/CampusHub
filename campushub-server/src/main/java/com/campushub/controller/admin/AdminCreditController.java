@@ -31,7 +31,7 @@ public class AdminCreditController {
     @PutMapping("/booking/{bookingId}/breach")
     public Result<Void> markBookingBreach(@PathVariable("bookingId") Long bookingId,
                                           @RequestBody AdminCreditBreachDTO breachDTO) {
-        log.info("[AdminCredit] booking breach bookingId={}, deductScore={}",
+        log.info("[AdminCredit] 后台登记预约违约 bookingId={}, deductScore={}",
                 bookingId, breachDTO.getDeductScore());
         creditService.markBookingBreach(bookingId, breachDTO);
         return Result.success();
@@ -43,7 +43,7 @@ public class AdminCreditController {
     @GetMapping("/appeals")
     public Result<List<AdminBookingBreachAppealVO>> listBookingBreachAppeals(
             @RequestParam(value = "appealStatus", required = false) Integer appealStatus) {
-        log.info("[AdminCredit] list appeals appealStatus={}", appealStatus);
+        log.info("[AdminCredit] 查询后台违约申诉列表 appealStatus={}", appealStatus);
         return Result.success(creditService.listAdminBookingBreachAppeals(appealStatus));
     }
 
@@ -53,7 +53,7 @@ public class AdminCreditController {
     @PutMapping("/appeals/{appealId}/audit")
     public Result<Void> auditBookingBreachAppeal(@PathVariable("appealId") Long appealId,
                                                  @RequestBody AdminBookingBreachAppealAuditDTO auditDTO) {
-        log.info("[AdminCredit] audit appealId={}, auditStatus={}", appealId, auditDTO.getAuditStatus());
+        log.info("[AdminCredit] 后台审核违约申诉 appealId={}, auditStatus={}", appealId, auditDTO.getAuditStatus());
         creditService.auditBookingBreachAppeal(appealId, auditDTO);
         return Result.success();
     }

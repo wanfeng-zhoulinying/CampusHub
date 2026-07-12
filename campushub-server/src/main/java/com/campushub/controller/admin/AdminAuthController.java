@@ -27,7 +27,7 @@ public class AdminAuthController {
      */
     @PostMapping("/login")
     public Result<UserLoginVO> login(@RequestBody UserLoginDTO loginDTO) {
-        log.info("[AdminAuth] login username={}", loginDTO.getUsername());
+        log.info("[AdminAuth] 管理员登录 username={}", loginDTO.getUsername());
         return Result.success(userService.adminLogin(loginDTO));
     }
 
@@ -37,7 +37,7 @@ public class AdminAuthController {
      */
     @GetMapping("/me")
     public Result<UserInfoVO> getCurrentAdmin() {
-        log.info("[AdminAuth] me");
+        log.info("[AdminAuth] 查询当前登录管理员信息");
         return Result.success(userService.getCurrentAdmin());
     }
 }

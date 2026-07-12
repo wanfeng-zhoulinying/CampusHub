@@ -28,7 +28,7 @@ public class AdminStatisticsController {
      */
     @GetMapping("/overview")
     public Result<AdminDashboardOverviewVO> getDashboardOverview() {
-        log.info("[AdminStatistics] overview");
+        log.info("[AdminStatistics] 查询后台看板总览");
         return Result.success(statisticsService.getDashboardOverview());
     }
 
@@ -37,7 +37,7 @@ public class AdminStatisticsController {
      */
     @GetMapping("/booking/status")
     public Result<List<AdminBookingStatusStatVO>> listBookingStatusStats() {
-        log.info("[AdminStatistics] booking status");
+        log.info("[AdminStatistics] 查询后台预约状态分布");
         return Result.success(statisticsService.listBookingStatusStats());
     }
 
@@ -46,7 +46,7 @@ public class AdminStatisticsController {
      */
     @GetMapping("/venue/hot")
     public Result<List<AdminHotVenueVO>> listHotVenues(@RequestParam(value = "limit", required = false) Integer limit) {
-        log.info("[AdminStatistics] hot venues limit={}", limit);
+        log.info("[AdminStatistics] 查询后台热门场地排行 limit={}", limit);
         return Result.success(statisticsService.listHotVenues(limit));
     }
 
@@ -55,7 +55,7 @@ public class AdminStatisticsController {
      */
     @GetMapping("/activity/hot")
     public Result<List<AdminHotActivityVO>> listHotActivities(@RequestParam(value = "limit", required = false) Integer limit) {
-        log.info("[AdminStatistics] hot activities limit={}", limit);
+        log.info("[AdminStatistics] 查询后台热门活动排行 limit={}", limit);
         return Result.success(statisticsService.listHotActivities(limit));
     }
 }

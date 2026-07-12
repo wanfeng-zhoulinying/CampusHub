@@ -34,7 +34,7 @@ public class ActivityController {
      */
     @GetMapping("/list")
     public Result<List<ActivityListVO>> listActivities(ActivityQueryDTO queryDTO) {
-        log.info("[Activity] list keyword={}, status={}, auditStatus={}",
+        log.info("[Activity] 查询活动列表 keyword={}, status={}, auditStatus={}",
                 queryDTO.getKeyword(), queryDTO.getStatus(), queryDTO.getAuditStatus());
         return Result.success(activityService.listActivities(queryDTO));
     }
@@ -45,7 +45,7 @@ public class ActivityController {
      */
     @GetMapping("/{activityId}")
     public Result<ActivityDetailVO> getActivityDetail(@PathVariable("activityId") Long activityId) {
-        log.info("[Activity] detail activityId={}", activityId);
+        log.info("[Activity] 查询活动详情 activityId={}", activityId);
         return Result.success(activityService.getActivityDetail(activityId));
     }
 
@@ -55,7 +55,7 @@ public class ActivityController {
      */
     @PostMapping("/signup")
     public Result<Long> signupActivity(@RequestBody ActivitySignupDTO signupDTO) {
-        log.info("[Activity] signup activityId={}", signupDTO.getActivityId());
+        log.info("[Activity] 活动报名 activityId={}", signupDTO.getActivityId());
         return Result.success(activityService.signupActivity(signupDTO));
     }
 
@@ -65,7 +65,7 @@ public class ActivityController {
      */
     @GetMapping("/my")
     public Result<List<ActivitySignupVO>> listMySignups(ActivitySignupQueryDTO queryDTO) {
-        log.info("[Activity] my signups signupStatus={}", queryDTO.getSignupStatus());
+        log.info("[Activity] 查询我的活动报名 signupStatus={}", queryDTO.getSignupStatus());
         return Result.success(activityService.listMySignups(queryDTO));
     }
 
@@ -75,7 +75,7 @@ public class ActivityController {
      */
     @PutMapping("/{signupId}/cancel")
     public Result<Void> cancelSignup(@PathVariable("signupId") Long signupId) {
-        log.info("[Activity] cancel signupId={}", signupId);
+        log.info("[Activity] 取消活动报名 signupId={}", signupId);
         activityService.cancelSignup(signupId);
         return Result.success();
     }
@@ -86,7 +86,7 @@ public class ActivityController {
      */
     @PutMapping("/{signupId}/checkin")
     public Result<Void> signActivity(@PathVariable("signupId") Long signupId) {
-        log.info("[Activity] checkin signupId={}", signupId);
+        log.info("[Activity] 活动签到 signupId={}", signupId);
         activityService.signActivity(signupId);
         return Result.success();
     }

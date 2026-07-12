@@ -32,7 +32,7 @@ public class BookingController {
      */
     @PostMapping("/create")
     public Result<Long> createBooking(@RequestBody BookingCreateDTO createDTO) {
-        log.info("[Booking] create venueId={}, slotId={}, personCount={}",
+        log.info("[Booking] 创建预约 venueId={}, slotId={}, personCount={}",
                 createDTO.getVenueId(), createDTO.getSlotId(), createDTO.getPersonCount());
         return Result.success(bookingService.createBooking(createDTO));
     }
@@ -43,7 +43,7 @@ public class BookingController {
      */
     @GetMapping("/my")
     public Result<List<BookingListVO>> listMyBookings(BookingQueryDTO queryDTO) {
-        log.info("[Booking] my bookings status={}", queryDTO.getStatus());
+        log.info("[Booking] 查询我的预约 status={}", queryDTO.getStatus());
         return Result.success(bookingService.listMyBookings(queryDTO));
     }
 
@@ -53,7 +53,7 @@ public class BookingController {
      */
     @PutMapping("/{bookingId}/cancel")
     public Result<Void> cancelBooking(@PathVariable("bookingId") Long bookingId, @RequestBody BookingCancelDTO cancelDTO) {
-        log.info("[Booking] cancel bookingId={}", bookingId);
+        log.info("[Booking] 取消预约 bookingId={}", bookingId);
         bookingService.cancelBooking(bookingId, cancelDTO);
         return Result.success();
     }
@@ -64,7 +64,7 @@ public class BookingController {
      */
     @PutMapping("/{bookingId}/checkin")
     public Result<Void> checkinBooking(@PathVariable("bookingId") Long bookingId) {
-        log.info("[Booking] checkin bookingId={}", bookingId);
+        log.info("[Booking] 场地预约核销 bookingId={}", bookingId);
         bookingService.checkinBooking(bookingId);
         return Result.success();
     }
