@@ -171,4 +171,29 @@
           and breach_flag = 1
     </update>
 
+    <select id="listExpiredUncheckedBookings" resultMap="bookingResultMap">
+        select
+            id,
+            booking_no,
+            user_id,
+            venue_id,
+            slot_id,
+            booking_date,
+            start_time,
+            end_time,
+            person_count,
+            status,
+            cancel_reason,
+            checkin_time,
+            breach_flag,
+            remark,
+            create_time,
+            update_time
+        from booking
+        where status = 1
+          and breach_flag = 0
+          and timestamp(booking_date, end_time) &lt;= now()
+        order by id asc
+    </select>
+
 </mapper>

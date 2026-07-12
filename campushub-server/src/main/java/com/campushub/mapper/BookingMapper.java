@@ -30,4 +30,6 @@ public interface BookingMapper {
     int markBookingBreach(@Param("id") Long id);
 
     int revertBookingBreach(@Param("id") Long id);
+
+    List<Booking> listExpiredUncheckedBookings();
 }

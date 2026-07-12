@@ -91,42 +91,20 @@ public class CreditServiceImpl implements CreditService {
             throw new BusinessException("扣减分值必须大于0");
         }
 
-        Booking booking = getRequiredBooking(bookingId);
-        if (BookingBreachFlagConstant.BREACHED.equals(booking.getBreachFlag())) {
-            throw new BusinessException("该预约已登记违约");
-        }
-        if (!BookingStatusConstant.BOOKED.equals(booking.getStatus())) {
-            throw new BusinessException("当前预约状态不允许登记违约");
-        }
+        markBookingBreachInternal(bookingId, breachDTO.getReason(), deductScore, getCurrentUserId());
+    }
 
-        SysUser user = getValidUser(booking.getUserId());
-        int currentScore = user.getCreditScore() == null ? CreditRuleConstant.DEFAULT_SCORE : user.getCreditScore();
-        int newScore = Math.max(CreditRuleConstant.MIN_SCORE, currentScore - deductScore);
-        int actualDeductScore = currentScore - newScore;
-
-        int affectedRows = bookingMapper.markBookingBreach(bookingId);
-        if (affectedRows == 0) {
-            throw new BusinessException("登记预约违约失败");
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void markBookingBreachBySystem(Long bookingId) {
+        if (bookingId == null) {
+            throw new BusinessException("预约ID不能为空");
         }
-
-        updateUserCreditScore(user.getId(), newScore);
-        saveCreditRecord(
-                user.getId(),
-                CreditChangeTypeConstant.DECREASE,
-                actualDeductScore,
-                newScore,
-                breachDTO.getReason(),
-                CreditBusinessTypeConstant.BOOKING_BREACH,
+        markBookingBreachInternal(
                 bookingId,
-                getCurrentUserId()
-        );
-
-        messageService.createMessage(
-                user.getId(),
-                "信用分变动通知",
-                "你的场地预约已被登记违约，信用分扣减 " + actualDeductScore + " 分，当前信用分为 " + newScore + " 分。预约单号：" + booking.getBookingNo(),
-                MessageTypeConstant.CREDIT,
-                bookingId
+                "预约结束后未按时核销，系统自动判定违约",
+                CreditRuleConstant.BOOKING_BREACH_DEDUCT_SCORE,
+                null
         );
     }
 
@@ -286,6 +264,46 @@ public class CreditServiceImpl implements CreditService {
                 "你的预约违约申诉未通过审核。预约单号：" + booking.getBookingNo() + "。审核备注：" + auditDTO.getAuditRemark(),
                 MessageTypeConstant.AUDIT,
                 appealId
+        );
+    }
+
+    private void markBookingBreachInternal(Long bookingId, String reason, Integer deductScore, Long operatorId) {
+        Booking booking = getRequiredBooking(bookingId);
+        if (BookingBreachFlagConstant.BREACHED.equals(booking.getBreachFlag())) {
+            throw new BusinessException("该预约已登记违约");
+        }
+        if (!BookingStatusConstant.BOOKED.equals(booking.getStatus())) {
+            throw new BusinessException("当前预约状态不允许登记违约");
+        }
+
+        SysUser user = getValidUser(booking.getUserId());
+        int currentScore = user.getCreditScore() == null ? CreditRuleConstant.DEFAULT_SCORE : user.getCreditScore();
+        int newScore = Math.max(CreditRuleConstant.MIN_SCORE, currentScore - deductScore);
+        int actualDeductScore = currentScore - newScore;
+
+        int affectedRows = bookingMapper.markBookingBreach(bookingId);
+        if (affectedRows == 0) {
+            throw new BusinessException("登记预约违约失败");
+        }
+
+        updateUserCreditScore(user.getId(), newScore);
+        saveCreditRecord(
+                user.getId(),
+                CreditChangeTypeConstant.DECREASE,
+                actualDeductScore,
+                newScore,
+                reason,
+                CreditBusinessTypeConstant.BOOKING_BREACH,
+                bookingId,
+                operatorId
+        );
+
+        messageService.createMessage(
+                user.getId(),
+                "信用分变动通知",
+                "你的场地预约已被登记违约，信用分扣减 " + actualDeductScore + " 分，当前信用分为 " + newScore + " 分。预约单号：" + booking.getBookingNo(),
+                MessageTypeConstant.CREDIT,
+                bookingId
         );
     }
 

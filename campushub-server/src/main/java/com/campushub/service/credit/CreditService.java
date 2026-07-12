@@ -18,6 +18,8 @@ public interface CreditService {
 
     void markBookingBreach(Long bookingId, AdminCreditBreachDTO breachDTO);
 
+    void markBookingBreachBySystem(Long bookingId);
+
     Long createBookingBreachAppeal(Long bookingId, BookingBreachAppealCreateDTO createDTO);
 
     List<BookingBreachAppealVO> listMyBookingBreachAppeals(Integer appealStatus);
