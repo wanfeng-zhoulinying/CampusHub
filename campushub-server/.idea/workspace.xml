@@ -4,16 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8b2107f5-00f7-4698-b1e4-557ee2aa8d8e" name="更改" comment="信用分对活动和预约限制模块测试">
-      <change afterPath="$PROJECT_DIR$/src/main/resources/sql/task/taskV1_test.sql" afterDir="false" />
+    <list default="true" id="8b2107f5-00f7-4698-b1e4-557ee2aa8d8e" name="更改" comment=" 控制台输出优化">
       <change beforePath="$PROJECT_DIR$/.idea/sqldialects.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/CampusHubApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/CampusHubApplication.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/constant/ActivityStatusConstant.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/constant/ActivityStatusConstant.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/mapper/BookingMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/mapper/BookingMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/credit/CreditService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/credit/CreditService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/credit/CreditServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/credit/CreditServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/mapper/booking/BookingMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/mapper/booking/BookingMapper.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/activity/ActivityServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/activity/ActivityServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/admin/AdminActivityServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/admin/AdminActivityServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/admin/AdminVenueServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/admin/AdminVenueServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/venue/VenueServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/venue/VenueServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/task/ScheduleTask.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/task/ScheduleTask.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -139,7 +137,9 @@
       <workItem from="1783336169168" duration="2859000" />
       <workItem from="1783347102584" duration="1567000" />
       <workItem from="1783771467010" duration="5897000" />
-      <workItem from="1783834637300" duration="4344000" />
+      <workItem from="1783834637300" duration="5953000" />
+      <workItem from="1783859572465" duration="4210000" />
+      <workItem from="1783921669436" duration="4895000" />
     </task>
     <task id="LOCAL-00001" summary="venue功能实现">
       <option name="closed" value="true" />
@@ -317,7 +317,23 @@
       <option name="project" value="LOCAL" />
       <updated>1783779818499</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="LOCAL-00023" summary="定时任务ScheduleTask,活动状态自动流转，预约超时未核销自动违约扣分">
+      <option name="closed" value="true" />
+      <created>1783839686586</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1783839686586</updated>
+    </task>
+    <task id="LOCAL-00024" summary=" 控制台输出优化">
+      <option name="closed" value="true" />
+      <created>1783862196791</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1783862196791</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -358,6 +374,8 @@
     <MESSAGE value="信用分概览口径优化" />
     <MESSAGE value="信用分对活动和预约限制模块" />
     <MESSAGE value="信用分对活动和预约限制模块测试" />
-    <option name="LAST_COMMIT_MESSAGE" value="信用分对活动和预约限制模块测试" />
+    <MESSAGE value="定时任务ScheduleTask,活动状态自动流转，预约超时未核销自动违约扣分" />
+    <MESSAGE value=" 控制台输出优化" />
+    <option name="LAST_COMMIT_MESSAGE" value=" 控制台输出优化" />
   </component>
 </project>

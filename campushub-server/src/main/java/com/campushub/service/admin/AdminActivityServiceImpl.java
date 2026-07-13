@@ -4,12 +4,14 @@ import com.campushub.constant.ActivityAuditStatusConstant;
 import com.campushub.constant.ActivityStatusConstant;
 import com.campushub.constant.DeleteStatusConstant;
 import com.campushub.constant.MessageTypeConstant;
+import com.campushub.constant.RedisKeyConstant;
 import com.campushub.dto.AdminActivityAuditDTO;
 import com.campushub.dto.AdminActivityQueryDTO;
 import com.campushub.dto.AdminActivitySaveDTO;
 import com.campushub.entity.Activity;
 import com.campushub.exception.BusinessException;
 import com.campushub.mapper.ActivityMapper;
+import com.campushub.service.cache.RedisCacheService;
 import com.campushub.service.message.MessageService;
 import com.campushub.vo.AdminActivityListVO;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ public class AdminActivityServiceImpl implements AdminActivityService {
 
     private final ActivityMapper activityMapper;
     private final MessageService messageService;
+    private final RedisCacheService redisCacheService;
 
     /**
      * 后台活动列表。
@@ -99,6 +102,7 @@ public class AdminActivityServiceImpl implements AdminActivityService {
         if (affectedRows == 0) {
             throw new BusinessException("活动修改失败");
         }
+        evictActivityDetailCache(activityId);
     }
 
     /**
@@ -137,6 +141,7 @@ public class AdminActivityServiceImpl implements AdminActivityService {
                 MessageTypeConstant.AUDIT,
                 activityId
         );
+        evictActivityDetailCache(activityId);
     }
 
     /**
@@ -154,6 +159,7 @@ public class AdminActivityServiceImpl implements AdminActivityService {
         if (affectedRows == 0) {
             throw new BusinessException("活动状态修改失败");
         }
+        evictActivityDetailCache(activityId);
     }
 
     private String getAuditResultText(Integer auditStatus) {
@@ -188,5 +194,12 @@ public class AdminActivityServiceImpl implements AdminActivityService {
         if (saveDTO.getWaitLimit() == null || saveDTO.getWaitLimit() < 0) {
             throw new BusinessException("候补上限不能小于0");
         }
+    }
+
+    /**
+     * 删除活动详情缓存。
+     */
+    private void evictActivityDetailCache(Long activityId) {
+        redisCacheService.delete(RedisKeyConstant.ACTIVITY_DETAIL + activityId);
     }
 }

@@ -6,6 +6,8 @@ import com.campushub.constant.ActivitySignupStatusConstant;
 import com.campushub.constant.ActivityStatusConstant;
 import com.campushub.constant.CreditRuleConstant;
 import com.campushub.constant.MessageTypeConstant;
+import com.campushub.constant.RedisKeyConstant;
+import com.campushub.constant.RedisTtlConstant;
 import com.campushub.dto.ActivityQueryDTO;
 import com.campushub.dto.ActivitySignupDTO;
 import com.campushub.dto.ActivitySignupQueryDTO;
@@ -15,6 +17,7 @@ import com.campushub.entity.SysUser;
 import com.campushub.exception.BusinessException;
 import com.campushub.mapper.ActivityMapper;
 import com.campushub.mapper.UserMapper;
+import com.campushub.service.cache.RedisCacheService;
 import com.campushub.service.message.MessageService;
 import com.campushub.utils.UserContext;
 import com.campushub.vo.ActivityDetailVO;
@@ -34,6 +37,7 @@ public class ActivityServiceImpl implements ActivityService {
     private final ActivityMapper activityMapper;
     private final UserMapper userMapper;
     private final MessageService messageService;
+    private final RedisCacheService redisCacheService;
 
     /**
      * 查询活动列表。
@@ -49,7 +53,14 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Override
     public ActivityDetailVO getActivityDetail(Long activityId) {
-        return activityMapper.getActivityDetailById(activityId);
+        String cacheKey = buildActivityDetailKey(activityId);
+        // 活动详情使用 Cache Aside，命中空值缓存时不再重复查询数据库。
+        return redisCacheService.queryWithPassThrough(
+                cacheKey,
+                ActivityDetailVO.class,
+                RedisTtlConstant.ACTIVITY_DETAIL_MINUTES,
+                () -> activityMapper.getActivityDetailById(activityId)
+        );
     }
 
     /**
@@ -103,6 +114,7 @@ public class ActivityServiceImpl implements ActivityService {
                     MessageTypeConstant.ACTIVITY,
                     signup.getId()
             );
+            evictActivityDetailCache(signupDTO.getActivityId());
             return signup.getId();
         }
 
@@ -172,6 +184,7 @@ public class ActivityServiceImpl implements ActivityService {
                     MessageTypeConstant.ACTIVITY,
                     signupId
             );
+            evictActivityDetailCache(signup.getActivityId());
             return;
         }
 
@@ -200,6 +213,7 @@ public class ActivityServiceImpl implements ActivityService {
                 MessageTypeConstant.ACTIVITY,
                 signupId
         );
+        evictActivityDetailCache(signup.getActivityId());
     }
 
     /**
@@ -258,6 +272,20 @@ public class ActivityServiceImpl implements ActivityService {
 
     private String getActivityTitle(Activity activity) {
         return activity == null ? "活动" : activity.getTitle();
+    }
+
+    /**
+     * 构建活动详情缓存 key。
+     */
+    private String buildActivityDetailKey(Long activityId) {
+        return RedisKeyConstant.ACTIVITY_DETAIL + activityId;
+    }
+
+    /**
+     * 删除活动详情缓存。
+     */
+    private void evictActivityDetailCache(Long activityId) {
+        redisCacheService.delete(buildActivityDetailKey(activityId));
     }
 
     /**

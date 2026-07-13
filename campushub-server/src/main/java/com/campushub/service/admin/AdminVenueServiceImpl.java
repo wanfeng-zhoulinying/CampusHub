@@ -1,12 +1,14 @@
 package com.campushub.service.admin;
 
 import com.campushub.constant.DeleteStatusConstant;
+import com.campushub.constant.RedisKeyConstant;
 import com.campushub.constant.VenueStatusConstant;
 import com.campushub.dto.AdminVenueQueryDTO;
 import com.campushub.dto.AdminVenueSaveDTO;
 import com.campushub.entity.Venue;
 import com.campushub.exception.BusinessException;
 import com.campushub.mapper.VenueMapper;
+import com.campushub.service.cache.RedisCacheService;
 import com.campushub.vo.AdminVenueListVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,7 @@ import java.util.List;
 public class AdminVenueServiceImpl implements AdminVenueService {
 
     private final VenueMapper venueMapper;
+    private final RedisCacheService redisCacheService;
 
     /**
      * 后台场地列表。
@@ -84,6 +87,7 @@ public class AdminVenueServiceImpl implements AdminVenueService {
         if (affectedRows == 0) {
             throw new BusinessException("场地修改失败");
         }
+        evictVenueDetailCache(venueId);
     }
 
     /**
@@ -101,6 +105,7 @@ public class AdminVenueServiceImpl implements AdminVenueService {
         if (affectedRows == 0) {
             throw new BusinessException("场地状态修改失败");
         }
+        evictVenueDetailCache(venueId);
     }
 
     private void validateVenueSaveDTO(AdminVenueSaveDTO saveDTO) {
@@ -116,5 +121,12 @@ public class AdminVenueServiceImpl implements AdminVenueService {
         if (saveDTO.getCapacity() == null || saveDTO.getCapacity() <= 0) {
             throw new BusinessException("场地容量必须大于0");
         }
+    }
+
+    /**
+     * 删除场地详情缓存。
+     */
+    private void evictVenueDetailCache(Long venueId) {
+        redisCacheService.delete(RedisKeyConstant.VENUE_DETAIL + venueId);
     }
 }
