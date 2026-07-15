@@ -11,6 +11,7 @@ import com.campushub.dto.AdminActivitySaveDTO;
 import com.campushub.entity.Activity;
 import com.campushub.exception.BusinessException;
 import com.campushub.mapper.ActivityMapper;
+import com.campushub.service.activity.ActivitySignupRedisService;
 import com.campushub.service.cache.RedisCacheService;
 import com.campushub.service.message.MessageService;
 import com.campushub.vo.AdminActivityListVO;
@@ -27,6 +28,7 @@ public class AdminActivityServiceImpl implements AdminActivityService {
     private final ActivityMapper activityMapper;
     private final MessageService messageService;
     private final RedisCacheService redisCacheService;
+    private final ActivitySignupRedisService activitySignupRedisService;
 
     /**
      * 后台活动列表。
@@ -103,6 +105,7 @@ public class AdminActivityServiceImpl implements AdminActivityService {
             throw new BusinessException("活动修改失败");
         }
         evictActivityDetailCache(activityId);
+        activitySignupRedisService.clearActivityCounters(activityId);
     }
 
     /**
@@ -142,6 +145,7 @@ public class AdminActivityServiceImpl implements AdminActivityService {
                 activityId
         );
         evictActivityDetailCache(activityId);
+        activitySignupRedisService.clearActivityCounters(activityId);
     }
 
     /**
@@ -160,6 +164,7 @@ public class AdminActivityServiceImpl implements AdminActivityService {
             throw new BusinessException("活动状态修改失败");
         }
         evictActivityDetailCache(activityId);
+        activitySignupRedisService.clearActivityCounters(activityId);
     }
 
     private String getAuditResultText(Integer auditStatus) {

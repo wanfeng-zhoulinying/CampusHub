@@ -15,6 +15,12 @@ public final class RedisTtlConstant {
     /** 缓存随机过期偏移最大分钟数 */
     public static final long CACHE_RANDOM_MINUTES = 10;
 
+    /** 活动报名请求幂等时间，秒 */
+    public static final long ACTIVITY_SIGNUP_REQUEST_SECONDS = 5;
+
+    /** 活动报名并发计数兜底过期时间，分钟 */
+    public static final long ACTIVITY_SIGNUP_COUNTER_FALLBACK_MINUTES = 180;
+
     private RedisTtlConstant() {
     }
 }

@@ -4,13 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8b2107f5-00f7-4698-b1e4-557ee2aa8d8e" name="更改" comment=" 控制台输出优化">
+    <list default="true" id="8b2107f5-00f7-4698-b1e4-557ee2aa8d8e" name="更改" comment="Redis活动详情/场地详情缓存模块">
       <change beforePath="$PROJECT_DIR$/.idea/sqldialects.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/constant/ActivitySignupStatusConstant.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/constant/ActivitySignupStatusConstant.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/constant/RedisKeyConstant.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/constant/RedisKeyConstant.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/constant/RedisTtlConstant.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/constant/RedisTtlConstant.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/activity/ActivityServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/activity/ActivityServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/admin/AdminActivityServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/admin/AdminActivityServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/admin/AdminVenueServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/admin/AdminVenueServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/venue/VenueServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/venue/VenueServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/task/ScheduleTask.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/task/ScheduleTask.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -139,7 +140,10 @@
       <workItem from="1783771467010" duration="5897000" />
       <workItem from="1783834637300" duration="5953000" />
       <workItem from="1783859572465" duration="4210000" />
-      <workItem from="1783921669436" duration="4895000" />
+      <workItem from="1783921669436" duration="9681000" />
+      <workItem from="1783954007038" duration="1005000" />
+      <workItem from="1784015753881" duration="9307000" />
+      <workItem from="1784096790440" duration="1651000" />
     </task>
     <task id="LOCAL-00001" summary="venue功能实现">
       <option name="closed" value="true" />
@@ -333,7 +337,15 @@
       <option name="project" value="LOCAL" />
       <updated>1783862196791</updated>
     </task>
-    <option name="localTasksCounter" value="25" />
+    <task id="LOCAL-00025" summary="Redis活动详情/场地详情缓存模块">
+      <option name="closed" value="true" />
+      <created>1783928025188</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1783928025188</updated>
+    </task>
+    <option name="localTasksCounter" value="26" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -351,7 +363,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="venue功能实现" />
     <MESSAGE value="venue功能完结" />
     <MESSAGE value="booking功能" />
     <MESSAGE value="接入constant常量" />
@@ -376,6 +387,7 @@
     <MESSAGE value="信用分对活动和预约限制模块测试" />
     <MESSAGE value="定时任务ScheduleTask,活动状态自动流转，预约超时未核销自动违约扣分" />
     <MESSAGE value=" 控制台输出优化" />
-    <option name="LAST_COMMIT_MESSAGE" value=" 控制台输出优化" />
+    <MESSAGE value="Redis活动详情/场地详情缓存模块" />
+    <option name="LAST_COMMIT_MESSAGE" value="Redis活动详情/场地详情缓存模块" />
   </component>
 </project>

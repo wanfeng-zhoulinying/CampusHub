@@ -38,6 +38,7 @@ public class ActivityServiceImpl implements ActivityService {
     private final UserMapper userMapper;
     private final MessageService messageService;
     private final RedisCacheService redisCacheService;
+    private final ActivitySignupRedisService activitySignupRedisService;
 
     /**
      * 查询活动列表。
@@ -87,57 +88,75 @@ public class ActivityServiceImpl implements ActivityService {
             throw new BusinessException("当前活动不允许报名");
         }
 
-        ActivitySignup existedSignup = activityMapper.getSignupByActivityIdAndUserId(signupDTO.getActivityId(), currentUserId);
-        if (existedSignup != null && isActiveSignup(existedSignup.getSignupStatus())) {
-            throw new BusinessException("你已经报名过该活动");
-        }
+        ActivitySignupRedisService.SignupReserveResult reserveResult = null;
+        boolean requestLocked = false;
+        try {
+            activitySignupRedisService.acquireRequestLock(signupDTO.getActivityId(), currentUserId);
+            requestLocked = true;
 
-        ActivitySignup signup = new ActivitySignup();
-        signup.setActivityId(signupDTO.getActivityId());
-        signup.setUserId(currentUserId);
-        signup.setSignupTime(LocalDateTime.now());
-        signup.setSignStatus(ActivitySignStatusConstant.NOT_SIGNED);
-
-        if (activity.getCurrentSignupCount() < activity.getSignupLimit()) {
-            int affectedRows = activityMapper.increaseSignupCount(signupDTO.getActivityId());
-            if (affectedRows == 0) {
-                throw new BusinessException("活动报名失败，请刷新后重试");
+            ActivitySignup existedSignup = activityMapper.getSignupByActivityIdAndUserId(signupDTO.getActivityId(), currentUserId);
+            if (existedSignup != null && isActiveSignup(existedSignup.getSignupStatus())) {
+                throw new BusinessException("你已经报名过该活动");
             }
 
-            signup.setSignupStatus(ActivitySignupStatusConstant.SIGNED_UP);
-            signup.setWaitOrder(null);
+            // Redis 幂等锁先拦重复点击，再通过原子预占名额减少高并发直接打数据库。
+            Integer currentWaitCount = activityMapper.countWaitlistedSignups(signupDTO.getActivityId());
+            reserveResult = activitySignupRedisService.reserveSignup(
+                    activity,
+                    currentUserId,
+                    currentWaitCount == null ? 0 : currentWaitCount
+            );
+            if (reserveResult.isFull()) {
+                if (activity.getWaitLimit() == null || activity.getWaitLimit() <= 0) {
+                    throw new BusinessException("活动报名人数已满");
+                }
+                throw new BusinessException("活动候补人数已满");
+            }
+
+            ActivitySignup signup = new ActivitySignup();
+            signup.setActivityId(signupDTO.getActivityId());
+            signup.setUserId(currentUserId);
+            signup.setSignupTime(LocalDateTime.now());
+            signup.setSignStatus(ActivitySignStatusConstant.NOT_SIGNED);
+
+            if (reserveResult.isSigned()) {
+                int affectedRows = activityMapper.increaseSignupCount(signupDTO.getActivityId());
+                if (affectedRows == 0) {
+                    activitySignupRedisService.clearActivityCounters(signupDTO.getActivityId());
+                    throw new BusinessException("活动报名失败，请刷新后重试");
+                }
+
+                signup.setSignupStatus(ActivitySignupStatusConstant.SIGNED_UP);
+                signup.setWaitOrder(null);
+                activityMapper.saveSignup(signup);
+                messageService.createMessage(
+                        currentUserId,
+                        "活动报名成功",
+                        "你已成功报名活动：" + activity.getTitle(),
+                        MessageTypeConstant.ACTIVITY,
+                        signup.getId()
+                );
+                evictActivityDetailCache(signupDTO.getActivityId());
+                return signup.getId();
+            }
+
+            signup.setSignupStatus(ActivitySignupStatusConstant.WAITLISTED);
+            signup.setWaitOrder(reserveResult.getWaitOrder());
             activityMapper.saveSignup(signup);
             messageService.createMessage(
                     currentUserId,
-                    "活动报名成功",
-                    "你已成功报名活动：" + activity.getTitle(),
+                    "活动候补成功",
+                    "当前活动正式名额已满，你已进入候补队列，当前候补顺位：" + signup.getWaitOrder() + "。活动：" + activity.getTitle(),
                     MessageTypeConstant.ACTIVITY,
                     signup.getId()
             );
-            evictActivityDetailCache(signupDTO.getActivityId());
             return signup.getId();
+        } catch (RuntimeException e) {
+            if (requestLocked) {
+                activitySignupRedisService.releaseReservedQuota(signupDTO.getActivityId(), currentUserId, reserveResult);
+            }
+            throw e;
         }
-
-        if (activity.getWaitLimit() == null || activity.getWaitLimit() <= 0) {
-            throw new BusinessException("活动报名人数已满");
-        }
-
-        Integer currentWaitCount = activityMapper.countWaitlistedSignups(signupDTO.getActivityId());
-        if (currentWaitCount >= activity.getWaitLimit()) {
-            throw new BusinessException("活动候补人数已满");
-        }
-
-        signup.setSignupStatus(ActivitySignupStatusConstant.WAITLISTED);
-        signup.setWaitOrder(currentWaitCount + 1);
-        activityMapper.saveSignup(signup);
-        messageService.createMessage(
-                currentUserId,
-                "活动候补成功",
-                "当前活动正式名额已满，你已进入候补队列，当前候补顺位：" + signup.getWaitOrder() + "。活动：" + activity.getTitle(),
-                MessageTypeConstant.ACTIVITY,
-                signup.getId()
-        );
-        return signup.getId();
     }
 
     /**
@@ -184,6 +203,7 @@ public class ActivityServiceImpl implements ActivityService {
                     MessageTypeConstant.ACTIVITY,
                     signupId
             );
+            activitySignupRedisService.syncAfterCancel(signup.getActivityId(), signup.getSignupStatus(), false);
             evictActivityDetailCache(signup.getActivityId());
             return;
         }
@@ -202,8 +222,10 @@ public class ActivityServiceImpl implements ActivityService {
                     MessageTypeConstant.ACTIVITY,
                     waitlistedSignup.getId()
             );
+            activitySignupRedisService.syncAfterCancel(signup.getActivityId(), signup.getSignupStatus(), true);
         } else {
             activityMapper.decreaseSignupCount(signup.getActivityId());
+            activitySignupRedisService.syncAfterCancel(signup.getActivityId(), signup.getSignupStatus(), false);
         }
 
         messageService.createMessage(

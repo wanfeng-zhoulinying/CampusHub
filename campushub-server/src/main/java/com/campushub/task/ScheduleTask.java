@@ -35,6 +35,8 @@ public class ScheduleTask {
 
         if (signupStarted + signupFinished + inProgressStarted + finished > 0) {
             redisCacheService.deleteByPrefix(RedisKeyConstant.ACTIVITY_DETAIL);
+            redisCacheService.deleteByPrefix(RedisKeyConstant.ACTIVITY_SIGNUP_STOCK);
+            redisCacheService.deleteByPrefix(RedisKeyConstant.ACTIVITY_WAIT_STOCK);
             log.info("[ScheduleTask] 活动状态刷新完成 signupStarted={}, signupFinished={}, inProgressStarted={}, finished={}",
                     signupStarted, signupFinished, inProgressStarted, finished);
         }
