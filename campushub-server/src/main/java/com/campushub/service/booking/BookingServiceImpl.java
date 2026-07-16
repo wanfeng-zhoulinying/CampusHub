@@ -35,6 +35,7 @@ public class BookingServiceImpl implements BookingService {
     private final BookingMapper bookingMapper;
     private final UserMapper userMapper;
     private final MessageService messageService;
+    private final BookingRedisService bookingRedisService;
 
     /**
      * 创建预约记录。
@@ -59,6 +60,9 @@ public class BookingServiceImpl implements BookingService {
         if (!slot.getVenueId().equals(createDTO.getVenueId())) {
             throw new BusinessException("场地和时间段不匹配");
         }
+        if (VenueSlotStatusConstant.FULL.equals(slot.getStatus())) {
+            throw new BusinessException("当前时间段剩余容量不足");
+        }
         if (!VenueSlotStatusConstant.AVAILABLE.equals(slot.getStatus())) {
             throw new BusinessException("当前时间段不可预约");
         }
@@ -66,33 +70,57 @@ public class BookingServiceImpl implements BookingService {
             throw new BusinessException("当前时间段剩余容量不足");
         }
 
-        int affectedRows = bookingMapper.decreaseSlotCapacity(createDTO.getSlotId(), createDTO.getPersonCount());
-        if (affectedRows == 0) {
-            throw new BusinessException("预约失败，请刷新后重试");
+        BookingRedisService.BookingReserveResult reserveResult = null;
+        boolean requestLocked = false;
+        try {
+            bookingRedisService.acquireRequestLock(createDTO.getSlotId(), currentUserId);
+            requestLocked = true;
+
+            Booking existedBooking = bookingMapper.getActiveBookingBySlotIdAndUserId(createDTO.getSlotId(), currentUserId);
+            if (existedBooking != null) {
+                throw new BusinessException("你已经预约过该时间段");
+            }
+
+            // Redis 先做容量预占，数据库继续通过条件更新兜底，避免高并发下直接打满数据库。
+            reserveResult = bookingRedisService.reserveSlotCapacity(slot, currentUserId, createDTO.getPersonCount());
+            if (reserveResult.isFull()) {
+                throw new BusinessException("当前时间段剩余容量不足");
+            }
+
+            int affectedRows = bookingMapper.decreaseSlotCapacity(createDTO.getSlotId(), createDTO.getPersonCount());
+            if (affectedRows == 0) {
+                bookingRedisService.clearSlotCounter(createDTO.getSlotId());
+                throw new BusinessException("预约失败，请刷新后重试");
+            }
+
+            Booking booking = new Booking();
+            booking.setBookingNo(generateBookingNo());
+            booking.setUserId(currentUserId);
+            booking.setVenueId(createDTO.getVenueId());
+            booking.setSlotId(createDTO.getSlotId());
+            booking.setBookingDate(slot.getSlotDate());
+            booking.setStartTime(slot.getStartTime());
+            booking.setEndTime(slot.getEndTime());
+            booking.setPersonCount(createDTO.getPersonCount());
+            booking.setStatus(BookingStatusConstant.BOOKED);
+            booking.setBreachFlag(BookingBreachFlagConstant.NO_BREACH);
+            booking.setRemark(createDTO.getRemark());
+
+            bookingMapper.saveBooking(booking);
+            messageService.createMessage(
+                    currentUserId,
+                    "预约成功通知",
+                    "你的场地预约已成功，预约单号：" + booking.getBookingNo(),
+                    MessageTypeConstant.BOOKING,
+                    booking.getId()
+            );
+            return booking.getId();
+        } catch (RuntimeException e) {
+            if (requestLocked) {
+                bookingRedisService.releaseReservedCapacity(createDTO.getSlotId(), currentUserId, reserveResult);
+            }
+            throw e;
         }
-
-        Booking booking = new Booking();
-        booking.setBookingNo(generateBookingNo());
-        booking.setUserId(currentUserId);
-        booking.setVenueId(createDTO.getVenueId());
-        booking.setSlotId(createDTO.getSlotId());
-        booking.setBookingDate(slot.getSlotDate());
-        booking.setStartTime(slot.getStartTime());
-        booking.setEndTime(slot.getEndTime());
-        booking.setPersonCount(createDTO.getPersonCount());
-        booking.setStatus(BookingStatusConstant.BOOKED);
-        booking.setBreachFlag(BookingBreachFlagConstant.NO_BREACH);
-        booking.setRemark(createDTO.getRemark());
-
-        bookingMapper.saveBooking(booking);
-        messageService.createMessage(
-                currentUserId,
-                "预约成功通知",
-                "你的场地预约已成功，预约单号：" + booking.getBookingNo(),
-                MessageTypeConstant.BOOKING,
-                booking.getId()
-        );
-        return booking.getId();
     }
 
     /**
@@ -130,6 +158,7 @@ public class BookingServiceImpl implements BookingService {
         }
 
         bookingMapper.restoreSlotCapacity(booking.getSlotId(), booking.getPersonCount());
+        bookingRedisService.syncAfterCancel(booking.getSlotId(), booking.getPersonCount());
         messageService.createMessage(
                 currentUserId,
                 "预约取消通知",

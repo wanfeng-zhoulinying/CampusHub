@@ -18,6 +18,12 @@ public final class RedisKeyConstant {
     /** 活动报名请求幂等 key 前缀 */
     public static final String ACTIVITY_SIGNUP_REQUEST = "campushub:activity:signup:request:";
 
+    /** 场地预约时间段剩余容量 key 前缀 */
+    public static final String BOOKING_SLOT_STOCK = "campushub:booking:slot:stock:";
+
+    /** 场地预约请求幂等 key 前缀 */
+    public static final String BOOKING_REQUEST = "campushub:booking:request:";
+
     private RedisKeyConstant() {
     }
 }

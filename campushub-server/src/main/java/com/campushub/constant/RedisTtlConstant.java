@@ -21,6 +21,12 @@ public final class RedisTtlConstant {
     /** 活动报名并发计数兜底过期时间，分钟 */
     public static final long ACTIVITY_SIGNUP_COUNTER_FALLBACK_MINUTES = 180;
 
+    /** 场地预约请求幂等时间，秒 */
+    public static final long BOOKING_REQUEST_SECONDS = 5;
+
+    /** 场地预约容量并发计数兜底过期时间，分钟 */
+    public static final long BOOKING_SLOT_STOCK_FALLBACK_MINUTES = 180;
+
     private RedisTtlConstant() {
     }
 }

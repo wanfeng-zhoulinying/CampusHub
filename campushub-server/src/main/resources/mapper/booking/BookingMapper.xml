@@ -42,11 +42,11 @@
 
     <update id="decreaseSlotCapacity">
         update venue_slot
-        set available_capacity = available_capacity - #{personCount},
-            status = case
+        set status = case
                 when available_capacity - #{personCount} = 0 then 2
                 else 1
-            end
+            end,
+            available_capacity = available_capacity - #{personCount}
         where id = #{slotId}
           and status = 1
           and available_capacity &gt;= #{personCount}
@@ -107,6 +107,32 @@
             update_time
         from booking
         where id = #{id}
+        limit 1
+    </select>
+
+    <select id="getActiveBookingBySlotIdAndUserId" resultMap="bookingResultMap">
+        select
+            id,
+            booking_no,
+            user_id,
+            venue_id,
+            slot_id,
+            booking_date,
+            start_time,
+            end_time,
+            person_count,
+            status,
+            cancel_reason,
+            checkin_time,
+            breach_flag,
+            remark,
+            create_time,
+            update_time
+        from booking
+        where slot_id = #{slotId}
+          and user_id = #{userId}
+          and status = 1
+        order by id desc
         limit 1
     </select>
 
