@@ -92,6 +92,9 @@ public class HotRankService {
                 .toList();
     }
 
+    /**
+     * 私：对指定排行榜成员增加热度分，Redis 异常只记录日志不阻断主业务。
+     */
     private void increaseHeat(String key, Long businessId, double score, String reason, String idName) {
         if (businessId == null || score <= 0) {
             return;
@@ -109,6 +112,9 @@ public class HotRankService {
         }
     }
 
+    /**
+     * 私：从 Redis ZSet 中按分数倒序读取排行榜成员和分数。
+     */
     private List<RankItem> listRankItems(String key, Integer limit) {
         int safeLimit = normalizeLimit(limit);
         Set<ZSetOperations.TypedTuple<String>> tuples = stringRedisTemplate.opsForZSet()
@@ -129,6 +135,9 @@ public class HotRankService {
         return rankItems;
     }
 
+    /**
+     * 私：规范排行榜查询数量，限制最小值和最大值。
+     */
     private int normalizeLimit(Integer limit) {
         if (limit == null) {
             return DEFAULT_LIMIT;
@@ -136,6 +145,9 @@ public class HotRankService {
         return Math.min(Math.max(limit, 1), MAX_LIMIT);
     }
 
+    /**
+     * 私：将 Redis ZSet 成员解析为业务 ID，非法成员会被清理。
+     */
     private Long parseId(String value, String key) {
         if (value == null) {
             return null;
@@ -149,6 +161,9 @@ public class HotRankService {
         }
     }
 
+    /**
+     * 私：将排行榜分数填充到活动展示对象中。
+     */
     private HotActivityVO buildHotActivity(RankItem item, Map<Long, HotActivityVO> activityMap) {
         HotActivityVO activity = activityMap.get(item.getId());
         if (activity == null) {
@@ -158,6 +173,9 @@ public class HotRankService {
         return activity;
     }
 
+    /**
+     * 私：将排行榜分数填充到场地展示对象中。
+     */
     private HotVenueVO buildHotVenue(RankItem item, Map<Long, HotVenueVO> venueMap) {
         HotVenueVO venue = venueMap.get(item.getId());
         if (venue == null) {
@@ -173,6 +191,9 @@ public class HotRankService {
         private final Long id;
         private final Double score;
 
+        /**
+         * 私：构造 Redis 排行榜成员和分数的中间对象。
+         */
         private RankItem(Long id, Double score) {
             this.id = id;
             this.score = score;

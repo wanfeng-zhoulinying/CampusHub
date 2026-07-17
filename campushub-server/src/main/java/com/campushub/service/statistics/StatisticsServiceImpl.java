@@ -51,6 +51,9 @@ public class StatisticsServiceImpl implements StatisticsService {
         return statisticsMapper.listHotActivities(normalizeLimit(limit));
     }
 
+    /**
+     * 私：规范后台排行榜查询数量，空值使用默认值，非正数直接拦截。
+     */
     private Integer normalizeLimit(Integer limit) {
         if (limit == null) {
             return DEFAULT_TOP_LIMIT;

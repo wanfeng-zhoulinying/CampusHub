@@ -94,6 +94,9 @@ public class CreditServiceImpl implements CreditService {
         markBookingBreachInternal(bookingId, breachDTO.getReason(), deductScore, getCurrentUserId());
     }
 
+    /**
+     * 系统自动登记预约违约并扣减信用分。
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void markBookingBreachBySystem(Long bookingId) {
@@ -267,6 +270,9 @@ public class CreditServiceImpl implements CreditService {
         );
     }
 
+    /**
+     * 私：登记预约违约的共享内部逻辑，统一处理预约状态、信用分扣减、信用记录和消息通知。
+     */
     private void markBookingBreachInternal(Long bookingId, String reason, Integer deductScore, Long operatorId) {
         Booking booking = getRequiredBooking(bookingId);
         if (BookingBreachFlagConstant.BREACHED.equals(booking.getBreachFlag())) {
@@ -307,6 +313,9 @@ public class CreditServiceImpl implements CreditService {
         );
     }
 
+    /**
+     * 私：保存信用分变动记录。
+     */
     private void saveCreditRecord(Long userId,
                                   Integer changeType,
                                   Integer changeScore,
@@ -327,6 +336,9 @@ public class CreditServiceImpl implements CreditService {
         creditMapper.saveCreditRecord(creditRecord);
     }
 
+    /**
+     * 私：更新用户当前信用分。
+     */
     private void updateUserCreditScore(Long userId, Integer creditScore) {
         int affectedRows = creditMapper.updateUserCreditScore(userId, creditScore);
         if (affectedRows == 0) {
@@ -334,11 +346,17 @@ public class CreditServiceImpl implements CreditService {
         }
     }
 
+    /**
+     * 私：判断违约申诉审核状态是否合法。
+     */
     private boolean isValidAppealAuditStatus(Integer auditStatus) {
         return BookingAppealStatusConstant.APPROVED.equals(auditStatus)
                 || BookingAppealStatusConstant.REJECTED.equals(auditStatus);
     }
 
+    /**
+     * 私：构建申诉通过后写入信用记录的恢复原因。
+     */
     private String buildAppealApprovedReason(BookingBreachAppeal appeal, String auditRemark) {
         if (auditRemark == null || auditRemark.isBlank()) {
             return "预约违约申诉通过：" + appeal.getReason();
@@ -346,6 +364,9 @@ public class CreditServiceImpl implements CreditService {
         return "预约违约申诉通过：" + auditRemark;
     }
 
+    /**
+     * 私：根据预约 ID 查询预约记录，不存在时直接抛出业务异常。
+     */
     private Booking getRequiredBooking(Long bookingId) {
         Booking booking = bookingMapper.getBookingById(bookingId);
         if (booking == null) {
@@ -354,6 +375,9 @@ public class CreditServiceImpl implements CreditService {
         return booking;
     }
 
+    /**
+     * 私：查询未删除用户，不存在或已删除时抛出业务异常。
+     */
     private SysUser getValidUser(Long userId) {
         SysUser user = userMapper.getById(userId);
         if (user == null || !DeleteStatusConstant.NOT_DELETED.equals(user.getIsDeleted())) {

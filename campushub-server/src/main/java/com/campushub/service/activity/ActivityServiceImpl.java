@@ -56,11 +56,17 @@ public class ActivityServiceImpl implements ActivityService {
         return activityMapper.listActivities(queryDTO.getKeyword(), status, auditStatus);
     }
 
+    /**
+     * 查询 Redis ZSet 热门活动排行榜。
+     */
     @Override
     public List<HotActivityVO> listHotActivities(Integer limit) {
         return hotRankService.listHotActivities(limit);
     }
 
+    /**
+     * 查询活动详情，命中详情缓存后仍记录活动浏览热度。
+     */
     @Override
     public ActivityDetailVO getActivityDetail(Long activityId) {
         String cacheKey = buildActivityDetailKey(activityId);
@@ -298,36 +304,48 @@ public class ActivityServiceImpl implements ActivityService {
         );
     }
 
+    /**
+     * 私：判断报名记录是否仍属于有效占位状态。
+     */
     private boolean isActiveSignup(Integer signupStatus) {
         return ActivitySignupStatusConstant.SIGNED_UP.equals(signupStatus)
                 || ActivitySignupStatusConstant.WAITLISTED.equals(signupStatus)
                 || ActivitySignupStatusConstant.WAITLIST_CONFIRMED.equals(signupStatus);
     }
 
+    /**
+     * 私：判断报名记录当前状态是否允许用户取消。
+     */
     private boolean isCancelableSignup(Integer signupStatus) {
         return ActivitySignupStatusConstant.SIGNED_UP.equals(signupStatus)
                 || ActivitySignupStatusConstant.WAITLISTED.equals(signupStatus)
                 || ActivitySignupStatusConstant.WAITLIST_CONFIRMED.equals(signupStatus);
     }
 
+    /**
+     * 私：判断报名记录当前状态是否允许签到。
+     */
     private boolean isSignableSignup(Integer signupStatus) {
         return ActivitySignupStatusConstant.SIGNED_UP.equals(signupStatus)
                 || ActivitySignupStatusConstant.WAITLIST_CONFIRMED.equals(signupStatus);
     }
 
+    /**
+     * 私：获取活动标题，活动为空时返回兜底文案。
+     */
     private String getActivityTitle(Activity activity) {
         return activity == null ? "活动" : activity.getTitle();
     }
 
     /**
-     * 构建活动详情缓存 key。
+     * 私：构建活动详情缓存 key。
      */
     private String buildActivityDetailKey(Long activityId) {
         return RedisKeyConstant.ACTIVITY_DETAIL + activityId;
     }
 
     /**
-     * 删除活动详情缓存。
+     * 私：删除活动详情缓存，让下次查询回源并重建缓存。
      */
     private void evictActivityDetailCache(Long activityId) {
         redisCacheService.delete(buildActivityDetailKey(activityId));
@@ -344,6 +362,9 @@ public class ActivityServiceImpl implements ActivityService {
         return currentUserId;
     }
 
+    /**
+     * 私：校验用户信用分是否满足活动报名最低要求。
+     */
     private void validateActivitySignupCreditScore(Long userId) {
         SysUser user = userMapper.getById(userId);
         if (user == null) {

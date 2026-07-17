@@ -128,6 +128,9 @@ public class SocialServiceImpl implements SocialService {
         return socialMapper.listUserFavorites(getCurrentUserId());
     }
 
+    /**
+     * 私：查询有效评论，评论不存在或已删除时抛出业务异常。
+     */
     private ActivityComment getValidComment(Long commentId) {
         if (commentId == null) {
             throw new BusinessException("评论ID不能为空");
@@ -139,6 +142,9 @@ public class SocialServiceImpl implements SocialService {
         return comment;
     }
 
+    /**
+     * 私：校验活动存在且未删除。
+     */
     private void validateActivityExists(Long activityId) {
         if (activityId == null) {
             throw new BusinessException("活动ID不能为空");

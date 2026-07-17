@@ -101,6 +101,9 @@ public class BookingRedisService {
         log.info("[BookingRedis] 删除场地预约容量计数 slotId={}", slotId);
     }
 
+    /**
+     * 私：当 Redis 中不存在时间段容量计数时，按数据库剩余容量初始化计数。
+     */
     private void initCounterIfAbsent(VenueSlot slot) {
         long ttlSeconds = calculateCounterTtlSeconds(slot);
         int remainCapacity = Math.max(slot.getAvailableCapacity(), 0);
@@ -111,10 +114,16 @@ public class BookingRedisService {
         );
     }
 
+    /**
+     * 私：清理单个用户对指定时间段的短期预约幂等锁。
+     */
     private void clearRequestLock(Long slotId, Long userId) {
         stringRedisTemplate.delete(buildRequestKey(slotId, userId));
     }
 
+    /**
+     * 私：仅在容量计数存在时回补指定人数，避免凭空创建脏计数。
+     */
     private void incrementByIfPresent(String key, Integer personCount) {
         Boolean existed = stringRedisTemplate.hasKey(key);
         if (Boolean.TRUE.equals(existed)) {
@@ -122,6 +131,9 @@ public class BookingRedisService {
         }
     }
 
+    /**
+     * 私：计算时间段容量计数 TTL，优先覆盖到时间段结束后一小时。
+     */
     private long calculateCounterTtlSeconds(VenueSlot slot) {
         long fallbackSeconds = Duration.ofMinutes(RedisTtlConstant.BOOKING_SLOT_STOCK_FALLBACK_MINUTES).getSeconds();
         if (slot.getSlotDate() == null || slot.getEndTime() == null) {
@@ -132,14 +144,23 @@ public class BookingRedisService {
         return Math.max(ttlSeconds, fallbackSeconds);
     }
 
+    /**
+     * 私：构建时间段剩余容量计数 key。
+     */
     private String buildSlotStockKey(Long slotId) {
         return RedisKeyConstant.BOOKING_SLOT_STOCK + slotId;
     }
 
+    /**
+     * 私：构建场地预约短期幂等 key。
+     */
     private String buildRequestKey(Long slotId, Long userId) {
         return RedisKeyConstant.BOOKING_REQUEST + slotId + ":" + userId;
     }
 
+    /**
+     * 私：创建时间段容量预占 Lua 脚本，保证判断容量和扣减容量原子执行。
+     */
     private static DefaultRedisScript<String> createReserveSlotCapacityScript() {
         DefaultRedisScript<String> script = new DefaultRedisScript<>();
         script.setResultType(String.class);
@@ -162,16 +183,25 @@ public class BookingRedisService {
         private final boolean full;
         private final Integer personCount;
 
+        /**
+         * 私：构造场地预约 Redis 预占结果。
+         */
         private BookingReserveResult(boolean reserved, boolean full, Integer personCount) {
             this.reserved = reserved;
             this.full = full;
             this.personCount = personCount;
         }
 
+        /**
+         * 创建容量预占成功结果。
+         */
         public static BookingReserveResult reserved(Integer personCount) {
             return new BookingReserveResult(true, false, personCount);
         }
 
+        /**
+         * 创建容量不足结果。
+         */
         public static BookingReserveResult full() {
             return new BookingReserveResult(false, true, null);
         }
