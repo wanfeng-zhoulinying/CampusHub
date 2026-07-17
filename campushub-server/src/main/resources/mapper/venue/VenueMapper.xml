@@ -30,6 +30,24 @@
         order by id desc
     </select>
 
+    <select id="listHotVenuesByIds" resultType="com.campushub.vo.HotVenueVO">
+        select
+            id,
+            name,
+            category,
+            location,
+            capacity,
+            cover_url,
+            status
+        from venue
+        where is_deleted = 0
+          and status = 1
+          and id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
     <select id="getVenueDetailById" resultType="com.campushub.vo.VenueDetailVO">
         select
             id,

@@ -5,6 +5,7 @@ import com.campushub.constant.ActivitySignStatusConstant;
 import com.campushub.constant.ActivitySignupStatusConstant;
 import com.campushub.constant.ActivityStatusConstant;
 import com.campushub.constant.CreditRuleConstant;
+import com.campushub.constant.HotRankScoreConstant;
 import com.campushub.constant.MessageTypeConstant;
 import com.campushub.constant.RedisKeyConstant;
 import com.campushub.constant.RedisTtlConstant;
@@ -18,11 +19,13 @@ import com.campushub.exception.BusinessException;
 import com.campushub.mapper.ActivityMapper;
 import com.campushub.mapper.UserMapper;
 import com.campushub.service.cache.RedisCacheService;
+import com.campushub.service.rank.HotRankService;
 import com.campushub.service.message.MessageService;
 import com.campushub.utils.UserContext;
 import com.campushub.vo.ActivityDetailVO;
 import com.campushub.vo.ActivityListVO;
 import com.campushub.vo.ActivitySignupVO;
+import com.campushub.vo.HotActivityVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +42,7 @@ public class ActivityServiceImpl implements ActivityService {
     private final MessageService messageService;
     private final RedisCacheService redisCacheService;
     private final ActivitySignupRedisService activitySignupRedisService;
+    private final HotRankService hotRankService;
 
     /**
      * 查询活动列表。
@@ -53,15 +57,24 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
+    public List<HotActivityVO> listHotActivities(Integer limit) {
+        return hotRankService.listHotActivities(limit);
+    }
+
+    @Override
     public ActivityDetailVO getActivityDetail(Long activityId) {
         String cacheKey = buildActivityDetailKey(activityId);
         // 活动详情使用 Cache Aside，命中空值缓存时不再重复查询数据库。
-        return redisCacheService.queryWithPassThrough(
+        ActivityDetailVO detail = redisCacheService.queryWithPassThrough(
                 cacheKey,
                 ActivityDetailVO.class,
                 RedisTtlConstant.ACTIVITY_DETAIL_MINUTES,
                 () -> activityMapper.getActivityDetailById(activityId)
         );
+        if (detail != null) {
+            hotRankService.increaseActivityHeat(activityId, HotRankScoreConstant.ACTIVITY_DETAIL_VIEW, "查看活动详情");
+        }
+        return detail;
     }
 
     /**
@@ -137,6 +150,11 @@ public class ActivityServiceImpl implements ActivityService {
                         signup.getId()
                 );
                 evictActivityDetailCache(signupDTO.getActivityId());
+                hotRankService.increaseActivityHeat(
+                        signupDTO.getActivityId(),
+                        HotRankScoreConstant.ACTIVITY_SIGNUP_SUCCESS,
+                        "活动报名成功"
+                );
                 return signup.getId();
             }
 
@@ -149,6 +167,11 @@ public class ActivityServiceImpl implements ActivityService {
                     "当前活动正式名额已满，你已进入候补队列，当前候补顺位：" + signup.getWaitOrder() + "。活动：" + activity.getTitle(),
                     MessageTypeConstant.ACTIVITY,
                     signup.getId()
+            );
+            hotRankService.increaseActivityHeat(
+                    signupDTO.getActivityId(),
+                    HotRankScoreConstant.ACTIVITY_SIGNUP_SUCCESS,
+                    "活动候补成功"
             );
             return signup.getId();
         } catch (RuntimeException e) {

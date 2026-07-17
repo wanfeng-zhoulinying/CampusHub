@@ -6,6 +6,7 @@ import com.campushub.vo.ActivityDetailVO;
 import com.campushub.vo.ActivityListVO;
 import com.campushub.vo.ActivitySignupVO;
 import com.campushub.vo.AdminActivityListVO;
+import com.campushub.vo.HotActivityVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -17,6 +18,8 @@ public interface ActivityMapper {
     List<ActivityListVO> listActivities(@Param("keyword") String keyword,
                                         @Param("status") Integer status,
                                         @Param("auditStatus") Integer auditStatus);
+
+    List<HotActivityVO> listHotActivitiesByIds(@Param("ids") List<Long> ids);
 
     ActivityDetailVO getActivityDetailById(@Param("id") Long id);
 

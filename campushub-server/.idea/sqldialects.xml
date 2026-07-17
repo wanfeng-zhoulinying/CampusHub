@@ -12,6 +12,7 @@
     <file url="file://$PROJECT_DIR$/src/main/resources/sql/credit/create_booking_breach_appeal_table.sql" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/src/main/resources/sql/credit/create_credit_tables.sql" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/src/main/resources/sql/message/create_message_table.sql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/sql/rank/hot_rank_v1_test.sql" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/src/main/resources/sql/social/create_social_tables.sql" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/src/main/resources/sql/task/taskV1_test.sql" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/src/main/resources/sql/user/creditscore_limit.sql" dialect="MySQL" />

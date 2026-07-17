@@ -1,6 +1,7 @@
 package com.campushub.service.venue;
 
 import com.campushub.dto.VenueQueryDTO;
+import com.campushub.vo.HotVenueVO;
 import com.campushub.vo.VenueDetailVO;
 import com.campushub.vo.VenueListVO;
 import com.campushub.vo.VenueSlotVO;
@@ -11,6 +12,8 @@ import java.util.List;
 public interface VenueService {
 
     List<VenueListVO> listVenues(VenueQueryDTO queryDTO);
+
+    List<HotVenueVO> listHotVenues(Integer limit);
 
     VenueDetailVO getVenueDetail(Long venueId);
 

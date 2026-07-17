@@ -1,6 +1,7 @@
 package com.campushub.service.social;
 
 import com.campushub.constant.DeleteStatusConstant;
+import com.campushub.constant.HotRankScoreConstant;
 import com.campushub.constant.SocialStatusConstant;
 import com.campushub.dto.ActivityCommentCreateDTO;
 import com.campushub.entity.Activity;
@@ -10,6 +11,7 @@ import com.campushub.entity.ActivityFavorite;
 import com.campushub.exception.BusinessException;
 import com.campushub.mapper.ActivityMapper;
 import com.campushub.mapper.SocialMapper;
+import com.campushub.service.rank.HotRankService;
 import com.campushub.utils.UserContext;
 import com.campushub.vo.ActivityCommentVO;
 import com.campushub.vo.ActivityFavoriteVO;
@@ -25,6 +27,7 @@ public class SocialServiceImpl implements SocialService {
 
     private final SocialMapper socialMapper;
     private final ActivityMapper activityMapper;
+    private final HotRankService hotRankService;
 
     /**
      * 发布活动评论。
@@ -104,6 +107,7 @@ public class SocialServiceImpl implements SocialService {
             favorite.setUserId(currentUserId);
             favorite.setStatus(SocialStatusConstant.VALID);
             socialMapper.saveActivityFavorite(favorite);
+            hotRankService.increaseActivityHeat(activityId, HotRankScoreConstant.ACTIVITY_FAVORITE, "收藏活动");
             return true;
         }
 

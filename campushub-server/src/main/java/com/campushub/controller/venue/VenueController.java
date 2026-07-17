@@ -3,6 +3,7 @@ package com.campushub.controller.venue;
 import com.campushub.common.Result;
 import com.campushub.dto.VenueQueryDTO;
 import com.campushub.service.venue.VenueService;
+import com.campushub.vo.HotVenueVO;
 import com.campushub.vo.VenueDetailVO;
 import com.campushub.vo.VenueListVO;
 import com.campushub.vo.VenueSlotVO;
@@ -35,6 +36,16 @@ public class VenueController {
         log.info("[Venue] 查询场地列表 category={}, keyword={}, status={}",
                 queryDTO.getCategory(), queryDTO.getKeyword(), queryDTO.getStatus());
         return Result.success(venueService.listVenues(queryDTO));
+    }
+
+    /**
+     * 热门场地排行榜查询接口。
+     * 基于 Redis ZSet 中累计的场地热度分，返回当前热门场地列表。
+     */
+    @GetMapping("/hot")
+    public Result<List<HotVenueVO>> listHotVenues(@RequestParam(value = "limit", required = false) Integer limit) {
+        log.info("[Venue] 查询热门场地排行榜 limit={}", limit);
+        return Result.success(venueService.listHotVenues(limit));
     }
 
     /**

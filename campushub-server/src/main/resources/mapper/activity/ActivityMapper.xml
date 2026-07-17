@@ -36,6 +36,31 @@
         order by id desc
     </select>
 
+    <select id="listHotActivitiesByIds" resultType="com.campushub.vo.HotActivityVO">
+        select
+            id,
+            title,
+            cover_url,
+            location,
+            signup_limit,
+            current_signup_count,
+            wait_limit,
+            status,
+            audit_status,
+            signup_start_time,
+            signup_end_time,
+            activity_start_time,
+            activity_end_time
+        from activity
+        where is_deleted = 0
+          and audit_status = 1
+          and status != 5
+          and id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
     <select id="getActivityDetailById" resultType="com.campushub.vo.ActivityDetailVO">
         select
             id,

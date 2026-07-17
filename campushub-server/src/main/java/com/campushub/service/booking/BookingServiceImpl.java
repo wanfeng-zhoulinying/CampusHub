@@ -3,6 +3,7 @@ package com.campushub.service.booking;
 import com.campushub.constant.BookingBreachFlagConstant;
 import com.campushub.constant.BookingStatusConstant;
 import com.campushub.constant.CreditRuleConstant;
+import com.campushub.constant.HotRankScoreConstant;
 import com.campushub.constant.MessageTypeConstant;
 import com.campushub.constant.VenueSlotStatusConstant;
 import com.campushub.dto.BookingCancelDTO;
@@ -15,6 +16,7 @@ import com.campushub.exception.BusinessException;
 import com.campushub.mapper.BookingMapper;
 import com.campushub.mapper.UserMapper;
 import com.campushub.service.message.MessageService;
+import com.campushub.service.rank.HotRankService;
 import com.campushub.utils.UserContext;
 import com.campushub.vo.BookingListVO;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +38,7 @@ public class BookingServiceImpl implements BookingService {
     private final UserMapper userMapper;
     private final MessageService messageService;
     private final BookingRedisService bookingRedisService;
+    private final HotRankService hotRankService;
 
     /**
      * 创建预约记录。
@@ -113,6 +116,11 @@ public class BookingServiceImpl implements BookingService {
                     "你的场地预约已成功，预约单号：" + booking.getBookingNo(),
                     MessageTypeConstant.BOOKING,
                     booking.getId()
+            );
+            hotRankService.increaseVenueHeat(
+                    createDTO.getVenueId(),
+                    HotRankScoreConstant.VENUE_BOOKING_SUCCESS,
+                    "场地预约成功"
             );
             return booking.getId();
         } catch (RuntimeException e) {

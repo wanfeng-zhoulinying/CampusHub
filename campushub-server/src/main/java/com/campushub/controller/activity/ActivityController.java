@@ -8,6 +8,7 @@ import com.campushub.service.activity.ActivityService;
 import com.campushub.vo.ActivityDetailVO;
 import com.campushub.vo.ActivityListVO;
 import com.campushub.vo.ActivitySignupVO;
+import com.campushub.vo.HotActivityVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -37,6 +39,16 @@ public class ActivityController {
         log.info("[Activity] 查询活动列表 keyword={}, status={}, auditStatus={}",
                 queryDTO.getKeyword(), queryDTO.getStatus(), queryDTO.getAuditStatus());
         return Result.success(activityService.listActivities(queryDTO));
+    }
+
+    /**
+     * 热门活动排行榜查询接口。
+     * 基于 Redis ZSet 中累计的活动热度分，返回当前热门活动列表。
+     */
+    @GetMapping("/hot")
+    public Result<List<HotActivityVO>> listHotActivities(@RequestParam(value = "limit", required = false) Integer limit) {
+        log.info("[Activity] 查询热门活动排行榜 limit={}", limit);
+        return Result.success(activityService.listHotActivities(limit));
     }
 
     /**

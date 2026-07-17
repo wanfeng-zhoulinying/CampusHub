@@ -24,6 +24,12 @@ public final class RedisKeyConstant {
     /** 场地预约请求幂等 key 前缀 */
     public static final String BOOKING_REQUEST = "campushub:booking:request:";
 
+    /** 热门活动排行榜 ZSet key */
+    public static final String HOT_ACTIVITY_RANK = "campushub:rank:hot:activity";
+
+    /** 热门场地排行榜 ZSet key */
+    public static final String HOT_VENUE_RANK = "campushub:rank:hot:venue";
+
     private RedisKeyConstant() {
     }
 }

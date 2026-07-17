@@ -2,6 +2,7 @@ package com.campushub.mapper;
 
 import com.campushub.entity.Venue;
 import com.campushub.vo.AdminVenueListVO;
+import com.campushub.vo.HotVenueVO;
 import com.campushub.vo.VenueDetailVO;
 import com.campushub.vo.VenueListVO;
 import com.campushub.vo.VenueSlotVO;
@@ -17,6 +18,8 @@ public interface VenueMapper {
     List<VenueListVO> listVenues(@Param("category") String category,
                                  @Param("keyword") String keyword,
                                  @Param("status") Integer status);
+
+    List<HotVenueVO> listHotVenuesByIds(@Param("ids") List<Long> ids);
 
     VenueDetailVO getVenueDetailById(@Param("id") Long id);
 
