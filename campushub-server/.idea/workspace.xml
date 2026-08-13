@@ -4,16 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8b2107f5-00f7-4698-b1e4-557ee2aa8d8e" name="更改" comment="Redis ZSet热门活动/热门场地排行">
+    <list default="true" id="8b2107f5-00f7-4698-b1e4-557ee2aa8d8e" name="更改" comment="业务逻辑注释收口">
+      <change afterPath="$PROJECT_DIR$/src/main/resources/sql/task/taskV2_test.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/sqldialects.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/activity/ActivityServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/activity/ActivityServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/activity/ActivitySignupRedisService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/activity/ActivitySignupRedisService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/booking/BookingRedisService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/booking/BookingRedisService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/credit/CreditServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/credit/CreditServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/rank/HotRankService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/rank/HotRankService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/social/SocialServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/social/SocialServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/statistics/StatisticsServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/statistics/StatisticsServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/venue/VenueServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/venue/VenueServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/cache/RedisCacheService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/cache/RedisCacheService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -146,7 +141,8 @@
       <workItem from="1784015753881" duration="9307000" />
       <workItem from="1784096790440" duration="3255000" />
       <workItem from="1784183233692" duration="8498000" />
-      <workItem from="1784270802209" duration="8685000" />
+      <workItem from="1784270802209" duration="9832000" />
+      <workItem from="1786622751695" duration="5969000" />
     </task>
     <task id="LOCAL-00001" summary="venue功能实现">
       <option name="closed" value="true" />
@@ -372,7 +368,15 @@
       <option name="project" value="LOCAL" />
       <updated>1784298539751</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="业务逻辑注释收口">
+      <option name="closed" value="true" />
+      <created>1784301319915</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1784301319915</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -390,7 +394,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="activity模块" />
     <MESSAGE value="booking场地预约核销+activity活动签到" />
     <MESSAGE value="用户注册、登录、查看当前用户，jwt配置落地，接入线程池" />
     <MESSAGE value="对booking和activity进行jwt改造初版" />
@@ -415,6 +418,7 @@
     <MESSAGE value="活动报名高并发优化V1" />
     <MESSAGE value="场地预约并发优化V1" />
     <MESSAGE value="Redis ZSet热门活动/热门场地排行" />
-    <option name="LAST_COMMIT_MESSAGE" value="Redis ZSet热门活动/热门场地排行" />
+    <MESSAGE value="业务逻辑注释收口" />
+    <option name="LAST_COMMIT_MESSAGE" value="业务逻辑注释收口" />
   </component>
 </project>

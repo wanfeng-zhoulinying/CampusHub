@@ -5,6 +5,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.Cursor;
+import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,7 @@ import java.util.function.Supplier;
 public class RedisCacheService {
 
     private static final String NULL_CACHE_VALUE = "__NULL__";
+    private static final long SCAN_COUNT = 500L;
 
     private final StringRedisTemplate stringRedisTemplate;
     private final ObjectMapper objectMapper;
@@ -96,12 +99,27 @@ public class RedisCacheService {
      * 适用于定时任务这类批量状态流转场景，避免旧详情缓存继续返回过期状态。
      */
     public void deleteByPrefix(String keyPrefix) {
-        Set<String> keys = stringRedisTemplate.keys(keyPrefix + "*");
-        if (keys == null || keys.isEmpty()) {
+        Set<String> keys = scanKeysByPrefix(keyPrefix);
+        if (keys.isEmpty()) {
             return;
         }
         stringRedisTemplate.delete(keys);
         log.info("[RedisCache] 按前缀批量删除缓存 keyPrefix={}, count={}", keyPrefix, keys.size());
+    }
+
+    private Set<String> scanKeysByPrefix(String keyPrefix) {
+        ScanOptions scanOptions = ScanOptions.scanOptions()
+                .match(keyPrefix + "*")
+                .count(SCAN_COUNT)
+                .build();
+        Set<String> keys = new java.util.LinkedHashSet<>();
+
+        try (Cursor<String> cursor = stringRedisTemplate.scan(scanOptions)) {
+            while (cursor.hasNext()) {
+                keys.add(cursor.next());
+            }
+        }
+        return keys;
     }
 
     private long randomMinutes() {
