@@ -30,6 +30,9 @@ public final class RedisKeyConstant {
     /** 热门场地排行榜 ZSet key */
     public static final String HOT_VENUE_RANK = "campushub:rank:hot:venue";
 
+    /** 缓存互斥重建锁 key 前缀 */
+    public static final String CACHE_MUTEX_LOCK = "campushub:lock:cache:";
+
     private RedisKeyConstant() {
     }
 }

@@ -50,7 +50,7 @@ public class VenueServiceImpl implements VenueService {
     public VenueDetailVO getVenueDetail(Long venueId) {
         String cacheKey = buildVenueDetailKey(venueId);
         // 场地详情使用 Cache Aside，命中空值缓存时不再重复查询数据库。
-        VenueDetailVO detail = redisCacheService.queryWithPassThrough(
+        VenueDetailVO detail = redisCacheService.queryWithMutex(
                 cacheKey,
                 VenueDetailVO.class,
                 RedisTtlConstant.VENUE_DETAIL_MINUTES,

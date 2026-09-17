@@ -4,11 +4,19 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8b2107f5-00f7-4698-b1e4-557ee2aa8d8e" name="更改" comment="业务逻辑注释收口">
-      <change afterPath="$PROJECT_DIR$/src/main/resources/sql/task/taskV2_test.sql" afterDir="false" />
+    <list default="true" id="8b2107f5-00f7-4698-b1e4-557ee2aa8d8e" name="更改" comment="deleteByPrefix 从 KEYS 改成 SCAN&#10;修掉一个生产级隐患">
       <change beforePath="$PROJECT_DIR$/.idea/sqldialects.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/constant/RedisKeyConstant.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/constant/RedisKeyConstant.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/constant/RedisTtlConstant.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/constant/RedisTtlConstant.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/activity/ActivityServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/activity/ActivityServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/cache/RedisCacheService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/cache/RedisCacheService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/campushub/service/venue/VenueServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/campushub/service/venue/VenueServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../campushub-user/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../campushub-user/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../campushub-user/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../campushub-user/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../campushub-user/src/main.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../campushub-user/src/main.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../campushub-user/src/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/../campushub-user/src/style.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -142,7 +150,15 @@
       <workItem from="1784096790440" duration="3255000" />
       <workItem from="1784183233692" duration="8498000" />
       <workItem from="1784270802209" duration="9832000" />
-      <workItem from="1786622751695" duration="5969000" />
+      <workItem from="1786622751695" duration="6587000" />
+      <workItem from="1786690531850" duration="4636000" />
+      <workItem from="1786711984883" duration="271000" />
+      <workItem from="1786883857617" duration="21000" />
+      <workItem from="1786976299129" duration="2598000" />
+      <workItem from="1789371189735" duration="3848000" />
+      <workItem from="1789459735992" duration="3658000" />
+      <workItem from="1789577401700" duration="434000" />
+      <workItem from="1789633304814" duration="1151000" />
     </task>
     <task id="LOCAL-00001" summary="venue功能实现">
       <option name="closed" value="true" />
@@ -376,7 +392,15 @@
       <option name="project" value="LOCAL" />
       <updated>1784301319915</updated>
     </task>
-    <option name="localTasksCounter" value="30" />
+    <task id="LOCAL-00030" summary="deleteByPrefix 从 KEYS 改成 SCAN&#10;修掉一个生产级隐患">
+      <option name="closed" value="true" />
+      <created>1786634347996</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1786634347996</updated>
+    </task>
+    <option name="localTasksCounter" value="31" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -394,7 +418,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="booking场地预约核销+activity活动签到" />
     <MESSAGE value="用户注册、登录、查看当前用户，jwt配置落地，接入线程池" />
     <MESSAGE value="对booking和activity进行jwt改造初版" />
     <MESSAGE value="md1.0" />
@@ -419,6 +442,7 @@
     <MESSAGE value="场地预约并发优化V1" />
     <MESSAGE value="Redis ZSet热门活动/热门场地排行" />
     <MESSAGE value="业务逻辑注释收口" />
-    <option name="LAST_COMMIT_MESSAGE" value="业务逻辑注释收口" />
+    <MESSAGE value="deleteByPrefix 从 KEYS 改成 SCAN&#10;修掉一个生产级隐患" />
+    <option name="LAST_COMMIT_MESSAGE" value="deleteByPrefix 从 KEYS 改成 SCAN&#10;修掉一个生产级隐患" />
   </component>
 </project>

@@ -71,11 +71,21 @@ public class ActivityServiceImpl implements ActivityService {
     public ActivityDetailVO getActivityDetail(Long activityId) {
         String cacheKey = buildActivityDetailKey(activityId);
         // 活动详情使用 Cache Aside，命中空值缓存时不再重复查询数据库。
-        ActivityDetailVO detail = redisCacheService.queryWithPassThrough(
+        ActivityDetailVO detail = redisCacheService.queryWithMutex(
                 cacheKey,
                 ActivityDetailVO.class,
                 RedisTtlConstant.ACTIVITY_DETAIL_MINUTES,
-                () -> activityMapper.getActivityDetailById(activityId)
+                () -> {
+                    // 测试用：模拟慢查询压测互斥锁，注意不得超过重试窗口
+                    // (20次 x 50ms = 1000ms)，这里用500ms，测完删除
+                    // 已完成击穿测试，暂时注释掉，需要复测时打开
+                    //try {
+                    //    Thread.sleep(500);
+                    //} catch (InterruptedException e) {
+                    //    Thread.currentThread().interrupt();
+                    //}
+                    return activityMapper.getActivityDetailById(activityId);
+                }
         );
         if (detail != null) {
             hotRankService.increaseActivityHeat(activityId, HotRankScoreConstant.ACTIVITY_DETAIL_VIEW, "查看活动详情");
