@@ -2,16 +2,20 @@ package com.campushub.service.message;
 
 import com.campushub.constant.DeleteStatusConstant;
 import com.campushub.constant.MessageReadStatusConstant;
+import com.campushub.constant.MessageTypeConstant;
 import com.campushub.entity.Message;
 import com.campushub.exception.BusinessException;
 import com.campushub.mapper.MessageMapper;
+import com.campushub.mq.event.BookingBreachEvent;
 import com.campushub.utils.UserContext;
 import com.campushub.vo.MessageVO;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MessageServiceImpl implements MessageService {
@@ -43,6 +47,35 @@ public class MessageServiceImpl implements MessageService {
         message.setReadStatus(MessageReadStatusConstant.UNREAD);
         message.setIsDeleted(DeleteStatusConstant.NOT_DELETED);
         messageMapper.saveMessage(message);
+    }
+
+    /**
+     * MQ消费：处理预约违约事件，给被违约用户发站内通知。
+     * 幂等——relay至少一次投递可能重复消费，以 message 的
+     * (user_id, type, business_id) 作为幂等键，已发过直接跳过。
+     */
+    @Override
+    public void sendBookingBreachNotify(BookingBreachEvent event) {
+        Integer count = messageMapper.countByBusiness(
+                event.getUserId(),
+                MessageTypeConstant.CREDIT,
+                event.getBookingId()
+        );
+        if (count != null && count > 0) {
+            log.info("[NotifyConsumer] 违约通知已发送过，幂等跳过 eventId={}, bookingId={}",
+                    event.getEventId(), event.getBookingId());
+            return;
+        }
+
+        createMessage(
+                event.getUserId(),
+                "信用分变动通知",
+                "你的场地预约已被登记违约，信用分扣减 " + event.getDeductScore() + " 分。预约单号：" + event.getBookingNo(),
+                MessageTypeConstant.CREDIT,
+                event.getBookingId()
+        );
+        log.info("[NotifyConsumer] 违约通知发送成功 eventId={}, userId={}",
+                event.getEventId(), event.getUserId());
     }
 
     /**

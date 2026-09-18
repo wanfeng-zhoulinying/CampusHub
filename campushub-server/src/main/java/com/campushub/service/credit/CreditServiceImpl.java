@@ -8,6 +8,7 @@ import com.campushub.constant.CreditChangeTypeConstant;
 import com.campushub.constant.CreditRuleConstant;
 import com.campushub.constant.DeleteStatusConstant;
 import com.campushub.constant.MessageTypeConstant;
+import com.campushub.constant.MqConstant;
 import com.campushub.dto.AdminBookingBreachAppealAuditDTO;
 import com.campushub.dto.AdminCreditBreachDTO;
 import com.campushub.dto.BookingBreachAppealCreateDTO;
@@ -19,18 +20,24 @@ import com.campushub.exception.BusinessException;
 import com.campushub.mapper.BookingMapper;
 import com.campushub.mapper.CreditMapper;
 import com.campushub.mapper.UserMapper;
+import com.campushub.mq.event.BookingBreachEvent;
 import com.campushub.service.message.MessageService;
+import com.campushub.service.mq.MqEventService;
 import com.campushub.utils.UserContext;
 import com.campushub.vo.AdminBookingBreachAppealVO;
 import com.campushub.vo.BookingBreachAppealVO;
 import com.campushub.vo.CreditOverviewVO;
 import com.campushub.vo.CreditRecordVO;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CreditServiceImpl implements CreditService {
@@ -39,6 +46,7 @@ public class CreditServiceImpl implements CreditService {
     private final UserMapper userMapper;
     private final BookingMapper bookingMapper;
     private final MessageService messageService;
+    private final MqEventService mqEventService;
 
     /**
      * 查询我的信用分概览。
@@ -69,7 +77,7 @@ public class CreditServiceImpl implements CreditService {
     }
 
     /**
-     * 管理员登记预约违约并扣减信用分。
+     * 管理员登记预约违约并发布违约事件（扣分/通知由消费方异步完成）。
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -95,7 +103,7 @@ public class CreditServiceImpl implements CreditService {
     }
 
     /**
-     * 系统自动登记预约违约并扣减信用分。
+     * 系统自动登记预约违约并发布违约事件（扣分/通知由消费方异步完成）。
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -109,6 +117,49 @@ public class CreditServiceImpl implements CreditService {
                 CreditRuleConstant.BOOKING_BREACH_DEDUCT_SCORE,
                 null
         );
+    }
+
+    /**
+     * MQ消费：处理预约违约事件（幂等扣分 + 信用流水）。
+     * 可靠性设计：
+     * 1. 幂等——relay至少一次投递可能重复消费，以 credit_record 的
+     *    (user_id, business_type, business_id) 作为天然幂等键，已扣过直接跳过；
+     * 2. 实时计算——扣分按消费时刻的信用分算，不用事件里的预设值，
+     *    因为消息在队列排队期间分数可能已被其他操作改变；
+     * 3. 失败上抛——DB抖动等异常抛给监听容器，本地重试耗尽后进死信队列。
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void consumeBookingBreachEvent(BookingBreachEvent event) {
+        Integer deducted = creditMapper.getUserDeductScoreByBusiness(
+                event.getUserId(),
+                CreditBusinessTypeConstant.BOOKING_BREACH,
+                event.getBookingId()
+        );
+        if (deducted != null) {
+            log.info("[CreditConsumer] 违约扣分已处理过，幂等跳过 eventId={}, bookingId={}",
+                    event.getEventId(), event.getBookingId());
+            return;
+        }
+
+        SysUser user = getValidUser(event.getUserId());
+        int currentScore = user.getCreditScore() == null ? CreditRuleConstant.DEFAULT_SCORE : user.getCreditScore();
+        int newScore = Math.max(CreditRuleConstant.MIN_SCORE, currentScore - event.getDeductScore());
+        int actualDeductScore = currentScore - newScore;
+
+        updateUserCreditScore(user.getId(), newScore);
+        saveCreditRecord(
+                user.getId(),
+                CreditChangeTypeConstant.DECREASE,
+                actualDeductScore,
+                newScore,
+                event.getReason(),
+                CreditBusinessTypeConstant.BOOKING_BREACH,
+                event.getBookingId(),
+                event.getOperatorId()
+        );
+        log.info("[CreditConsumer] 违约扣分完成 eventId={}, userId={}, {} -> {}",
+                event.getEventId(), user.getId(), currentScore, newScore);
     }
 
     /**
@@ -271,7 +322,10 @@ public class CreditServiceImpl implements CreditService {
     }
 
     /**
-     * 私：登记预约违约的共享内部逻辑，统一处理预约状态、信用分扣减、信用记录和消息通知。
+     * 私：登记预约违约的共享内部逻辑。
+     * 事件化改造（Outbox模式）：只做两件事——预约状态条件UPDATE + 违约事件写本地消息表，
+     * 两者同事务原子提交。扣分/流水/站内通知不再同步执行，改由MQ消费方异步完成，
+     * 解决"业务成功但MQ发送失败"的双写一致性问题。
      */
     private void markBookingBreachInternal(Long bookingId, String reason, Integer deductScore, Long operatorId) {
         Booking booking = getRequiredBooking(bookingId);
@@ -283,34 +337,30 @@ public class CreditServiceImpl implements CreditService {
         }
 
         SysUser user = getValidUser(booking.getUserId());
-        int currentScore = user.getCreditScore() == null ? CreditRuleConstant.DEFAULT_SCORE : user.getCreditScore();
-        int newScore = Math.max(CreditRuleConstant.MIN_SCORE, currentScore - deductScore);
-        int actualDeductScore = currentScore - newScore;
 
         int affectedRows = bookingMapper.markBookingBreach(bookingId);
         if (affectedRows == 0) {
             throw new BusinessException("登记预约违约失败");
         }
 
-        updateUserCreditScore(user.getId(), newScore);
-        saveCreditRecord(
-                user.getId(),
-                CreditChangeTypeConstant.DECREASE,
-                actualDeductScore,
-                newScore,
-                reason,
-                CreditBusinessTypeConstant.BOOKING_BREACH,
-                bookingId,
-                operatorId
-        );
-
-        messageService.createMessage(
-                user.getId(),
-                "信用分变动通知",
-                "你的场地预约已被登记违约，信用分扣减 " + actualDeductScore + " 分，当前信用分为 " + newScore + " 分。预约单号：" + booking.getBookingNo(),
-                MessageTypeConstant.CREDIT,
-                bookingId
-        );
+        // 本地消息表：违约事件与上面的预约UPDATE同事务落库，
+        // 由 MqEventRelayTask 轮询补发（Phase 3 消费方实现扣分/流水/通知）。
+        // 发送失败事件留存表中重试，不会出现"违约已登记但下游无感知"。
+        String eventId = UUID.randomUUID().toString();
+        BookingBreachEvent event = BookingBreachEvent.builder()
+                .eventId(eventId)
+                .bookingId(bookingId)
+                .userId(user.getId())
+                .bookingNo(booking.getBookingNo())
+                .reason(reason)
+                .deductScore(deductScore)
+                .operatorId(operatorId)
+                .source(operatorId == null
+                        ? MqConstant.EVENT_SOURCE_SYSTEM
+                        : MqConstant.EVENT_SOURCE_ADMIN)
+                .occurredAt(LocalDateTime.now())
+                .build();
+        mqEventService.saveEvent(eventId, MqConstant.EVENT_TYPE_BOOKING_BREACH, event);
     }
 
     /**

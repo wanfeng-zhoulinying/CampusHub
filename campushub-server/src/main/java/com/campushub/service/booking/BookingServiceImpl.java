@@ -15,6 +15,7 @@ import com.campushub.entity.VenueSlot;
 import com.campushub.exception.BusinessException;
 import com.campushub.mapper.BookingMapper;
 import com.campushub.mapper.UserMapper;
+import com.campushub.mq.producer.BookingDelayCheckProducer;
 import com.campushub.service.message.MessageService;
 import com.campushub.service.rank.HotRankService;
 import com.campushub.utils.UserContext;
@@ -39,6 +40,7 @@ public class BookingServiceImpl implements BookingService {
     private final MessageService messageService;
     private final BookingRedisService bookingRedisService;
     private final HotRankService hotRankService;
+    private final BookingDelayCheckProducer bookingDelayCheckProducer;
 
     /**
      * 创建预约记录。
@@ -110,6 +112,8 @@ public class BookingServiceImpl implements BookingService {
             booking.setRemark(createDTO.getRemark());
 
             bookingMapper.saveBooking(booking);
+            // 延迟核销检查：预约结束时间到点自动判违约（事务提交后才真正发送）
+            bookingDelayCheckProducer.sendDelayCheck(booking);
             messageService.createMessage(
                     currentUserId,
                     "预约成功通知",

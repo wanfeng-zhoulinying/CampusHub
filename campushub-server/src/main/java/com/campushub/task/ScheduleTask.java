@@ -43,9 +43,11 @@ public class ScheduleTask {
     }
 
     /**
-     * 每分钟扫描超时未核销预约，并自动判定违约。
+     * 兜底扫描超时未核销预约（降级为5分钟一次）。
+     * 主路径已切换为延迟消息（BookingDelayCheckProducer，到点精确判定）；
+     * 本任务仅在延迟消息丢失/插件异常时补偿，最坏滞后5分钟。
      */
-    @Scheduled(fixedDelay = 60_000)
+    @Scheduled(fixedDelay = 300_000)
     public void markExpiredUncheckedBookings() {
         List<Booking> expiredBookings = bookingMapper.listExpiredUncheckedBookings();
         if (expiredBookings.isEmpty()) {

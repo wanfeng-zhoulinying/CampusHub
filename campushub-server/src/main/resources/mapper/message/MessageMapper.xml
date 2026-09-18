@@ -24,6 +24,16 @@
         )
     </insert>
 
+    <!-- 消费端幂等查重：同一(user, type, businessId)视为同一笔通知 -->
+    <select id="countByBusiness" resultType="java.lang.Integer">
+        select count(1)
+        from message
+        where user_id = #{userId}
+          and type = #{type}
+          and business_id = #{businessId}
+          and is_deleted = 0
+    </select>
+
     <select id="listUserMessages" resultType="com.campushub.vo.MessageVO">
         select
             id,

@@ -12,6 +12,10 @@ public interface MessageMapper {
 
     int saveMessage(Message message);
 
+    Integer countByBusiness(@Param("userId") Long userId,
+                            @Param("type") Integer type,
+                            @Param("businessId") Long businessId);
+
     List<MessageVO> listUserMessages(@Param("userId") Long userId, @Param("readStatus") Integer readStatus);
 
     int markAsRead(@Param("messageId") Long messageId, @Param("userId") Long userId);
