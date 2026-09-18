@@ -47,12 +47,13 @@ mybatis:
   type-aliases-package: com.campushub.entity
   configuration:
     map-underscore-to-camel-case: true
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl   # 走SLF4J门面，可按logger名分级控制（StdOutImpl是裸stdout无法静音）
 
 logging:
   level:
     com.campushub: info
     com.campushub.mapper: debug
+    com.campushub.mapper.MqEventMapper: warn               # relay每3秒空轮询静音；要看该Mapper的SQL时临时改回debug
 
 campushub:
   jwt:
