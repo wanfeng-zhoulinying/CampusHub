@@ -11,15 +11,20 @@ import com.campushub.dto.AdminActivitySaveDTO;
 import com.campushub.entity.Activity;
 import com.campushub.exception.BusinessException;
 import com.campushub.mapper.ActivityMapper;
+import com.campushub.mq.event.ActivitySyncEvent;
+import com.campushub.constant.MqConstant;
 import com.campushub.service.activity.ActivitySignupRedisService;
 import com.campushub.service.cache.RedisCacheService;
 import com.campushub.service.message.MessageService;
+import com.campushub.service.mq.MqEventService;
 import com.campushub.vo.AdminActivityListVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +34,7 @@ public class AdminActivityServiceImpl implements AdminActivityService {
     private final MessageService messageService;
     private final RedisCacheService redisCacheService;
     private final ActivitySignupRedisService activitySignupRedisService;
+    private final MqEventService mqEventService;
 
     /**
      * 后台活动列表。
@@ -67,6 +73,7 @@ public class AdminActivityServiceImpl implements AdminActivityService {
         activity.setIsDeleted(DeleteStatusConstant.NOT_DELETED);
 
         activityMapper.saveActivity(activity);
+        saveSyncEvent(activity.getId(), MqConstant.SYNC_ACTION_CREATE);
         return activity.getId();
     }
 
@@ -104,6 +111,7 @@ public class AdminActivityServiceImpl implements AdminActivityService {
         if (affectedRows == 0) {
             throw new BusinessException("活动修改失败");
         }
+        saveSyncEvent(activityId, MqConstant.SYNC_ACTION_UPDATE);
         evictActivityDetailCache(activityId);
         activitySignupRedisService.clearActivityCounters(activityId);
     }
@@ -144,6 +152,7 @@ public class AdminActivityServiceImpl implements AdminActivityService {
                 MessageTypeConstant.AUDIT,
                 activityId
         );
+        saveSyncEvent(activityId, MqConstant.SYNC_ACTION_AUDIT);
         evictActivityDetailCache(activityId);
         activitySignupRedisService.clearActivityCounters(activityId);
     }
@@ -163,6 +172,7 @@ public class AdminActivityServiceImpl implements AdminActivityService {
         if (affectedRows == 0) {
             throw new BusinessException("活动状态修改失败");
         }
+        saveSyncEvent(activityId, MqConstant.SYNC_ACTION_STATUS);
         evictActivityDetailCache(activityId);
         activitySignupRedisService.clearActivityCounters(activityId);
     }
@@ -199,6 +209,20 @@ public class AdminActivityServiceImpl implements AdminActivityService {
         if (saveDTO.getWaitLimit() == null || saveDTO.getWaitLimit() < 0) {
             throw new BusinessException("候补上限不能小于0");
         }
+    }
+
+    /**
+     * 私：写路径埋ES同步事件——业务UPDATE与事件INSERT同事务（outbox模式），
+     * 事务提交后由relay补发至activity.exchange，消费端回查库写ES。
+     */
+    private void saveSyncEvent(Long activityId, String action) {
+        ActivitySyncEvent event = ActivitySyncEvent.builder()
+                .eventId(UUID.randomUUID().toString())
+                .activityId(activityId)
+                .action(action)
+                .occurredAt(LocalDateTime.now())
+                .build();
+        mqEventService.saveEvent(event.getEventId(), MqConstant.EVENT_TYPE_ACTIVITY_SYNC, event);
     }
 
     /**

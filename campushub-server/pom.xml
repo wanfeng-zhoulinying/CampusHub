@@ -22,6 +22,13 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
+        <!-- 覆盖Boot BOM对elasticsearch家族的8.x版本管理，与服务器7.12.1严格对齐：
+             否则BOM的dependencyManagement会把rest-high-level-client的传递依赖
+             (elasticsearch核心、rest-client)调解成8.x，运行时类不匹配 -->
+        <elasticsearch.version>7.12.1</elasticsearch.version>
+        <!-- Boot BOM对低层rest-client用独立属性管理（properties覆盖不到），
+             显式声明直接依赖7.12.1强制对齐（直接依赖版本优先于BOM调解） -->
+        <elasticsearch-client.version>7.12.1</elasticsearch-client.version>
     </properties>
 
     <dependencies>
@@ -44,6 +51,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>elasticsearch-rest-high-level-client</artifactId>
+            <version>7.12.1</version>
         </dependency>
 
         <dependency>

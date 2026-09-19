@@ -156,6 +156,37 @@ public class RabbitMqConfig {
                 .noargs();
     }
 
+    // ==================== 活动同步拓扑（ES搜索，Phase ③） ====================
+
+    /**
+     * 活动域交换机：与违约链路（booking.exchange）分域隔离，
+     * 活动数据同步事件由此路由至ES同步消费者。
+     */
+    @Bean
+    public DirectExchange activityExchange() {
+        return ExchangeBuilder.directExchange(MqConstant.ACTIVITY_EXCHANGE).durable(true).build();
+    }
+
+    /**
+     * 活动同步队列：挂死信交换机，同步ES失败超限的消息进死信兜底。
+     */
+    @Bean
+    public Queue activitySyncQueue() {
+        return QueueBuilder.durable(MqConstant.ACTIVITY_SYNC_QUEUE)
+                .deadLetterExchange(MqConstant.DEAD_EXCHANGE)
+                .build();
+    }
+
+    /**
+     * 同步队列绑定活动交换机。
+     */
+    @Bean
+    public Binding activitySyncQueueBinding() {
+        return BindingBuilder.bind(activitySyncQueue())
+                .to(activityExchange())
+                .with(MqConstant.ACTIVITY_SYNC_ROUTING_KEY);
+    }
+
     /**
      * 启动拓扑声明：RabbitAdmin默认行为是"首次建立连接时才统一声明全部Bean"，
      * 但当前应用既无生产者也无消费者，连接永远不会建立，拓扑永远不会被创建。
@@ -167,7 +198,7 @@ public class RabbitMqConfig {
     public ApplicationRunner rabbitTopologyInitializer(RabbitAdmin rabbitAdmin) {
         return args -> {
             rabbitAdmin.initialize();
-            log.info("[RabbitMQ] 拓扑声明完成：2个交换机、3个队列");
+            log.info("[RabbitMQ] 拓扑声明完成：4个交换机、5个队列");
         };
     }
 }

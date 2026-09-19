@@ -88,7 +88,7 @@ public class MqEventRelayTask {
         };
 
         rabbitTemplate.convertAndSend(
-                MqConstant.BOOKING_EXCHANGE,
+                resolveExchange(event.getEventType()),
                 resolveRoutingKey(event.getEventType()),
                 event.getPayload(),
                 messagePostProcessor,
@@ -104,11 +104,23 @@ public class MqEventRelayTask {
     }
 
     /**
+     * 私：事件类型到交换机的映射，新事件类型在此扩展。
+     */
+    private String resolveExchange(String eventType) {
+        return switch (eventType) {
+            case MqConstant.EVENT_TYPE_BOOKING_BREACH -> MqConstant.BOOKING_EXCHANGE;
+            case MqConstant.EVENT_TYPE_ACTIVITY_SYNC -> MqConstant.ACTIVITY_EXCHANGE;
+            default -> throw new IllegalArgumentException("未知事件类型：" + eventType);
+        };
+    }
+
+    /**
      * 私：事件类型到路由键的映射，新事件类型在此扩展。
      */
     private String resolveRoutingKey(String eventType) {
         return switch (eventType) {
             case MqConstant.EVENT_TYPE_BOOKING_BREACH -> MqConstant.BOOKING_BREACH_ROUTING_KEY;
+            case MqConstant.EVENT_TYPE_ACTIVITY_SYNC -> MqConstant.ACTIVITY_SYNC_ROUTING_KEY;
             default -> throw new IllegalArgumentException("未知事件类型：" + eventType);
         };
     }

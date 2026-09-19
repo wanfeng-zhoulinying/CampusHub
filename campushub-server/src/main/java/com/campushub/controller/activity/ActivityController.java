@@ -2,11 +2,14 @@ package com.campushub.controller.activity;
 
 import com.campushub.common.Result;
 import com.campushub.dto.ActivityQueryDTO;
+import com.campushub.dto.ActivitySearchDTO;
 import com.campushub.dto.ActivitySignupDTO;
 import com.campushub.dto.ActivitySignupQueryDTO;
 import com.campushub.service.activity.ActivityService;
+import com.campushub.service.es.ActivitySearchService;
 import com.campushub.vo.ActivityDetailVO;
 import com.campushub.vo.ActivityListVO;
+import com.campushub.vo.ActivitySearchVO;
 import com.campushub.vo.ActivitySignupVO;
 import com.campushub.vo.HotActivityVO;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +32,7 @@ import java.util.List;
 public class ActivityController {
 
     private final ActivityService activityService;
+    private final ActivitySearchService activitySearchService;
 
     /**
      * 活动列表查询接口。
@@ -39,6 +43,19 @@ public class ActivityController {
         log.info("[Activity] 查询活动列表 keyword={}, status={}, auditStatus={}",
                 queryDTO.getKeyword(), queryDTO.getStatus(), queryDTO.getAuditStatus());
         return Result.success(activityService.listActivities(queryDTO));
+    }
+
+    /**
+     * 活动搜索接口（ES）。
+     * multi_match三字段相关性搜索 + BM25排序 + 标题/内容高亮，
+     * ES不可用时自动降级MySQL LIKE，返回结构不变。
+     * 注：/search精确路径优先于/{activityId}路径变量匹配，无路由冲突。
+     */
+    @GetMapping("/search")
+    public Result<ActivitySearchVO> searchActivities(ActivitySearchDTO searchDTO) {
+        log.info("[Activity] 搜索活动 keyword={}, pageNum={}, pageSize={}",
+                searchDTO.getKeyword(), searchDTO.getPageNum(), searchDTO.getPageSize());
+        return Result.success(activitySearchService.search(searchDTO));
     }
 
     /**

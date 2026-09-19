@@ -56,6 +56,9 @@ logging:
     com.campushub.mapper.MqEventMapper: warn               # relay每3秒空轮询静音；要看该Mapper的SQL时临时改回debug
 
 campushub:
+  elasticsearch:
+    host: 192.168.184.129
+    port: 9200
   jwt:
     secret: campushub-campushub-campushub-campushub-2026
     expire-hours: 24

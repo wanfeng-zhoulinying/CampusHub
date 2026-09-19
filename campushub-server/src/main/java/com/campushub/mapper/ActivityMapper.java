@@ -39,6 +39,8 @@ public interface ActivityMapper {
 
     int decreaseSignupCount(@Param("activityId") Long activityId);
 
+    List<Activity> listAllActivitiesForSync();
+
     Activity getActivityById(@Param("id") Long id);
 
     int signActivity(@Param("id") Long id);

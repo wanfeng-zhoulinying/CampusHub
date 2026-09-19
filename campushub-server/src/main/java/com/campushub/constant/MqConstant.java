@@ -66,6 +66,46 @@ public class MqConstant {
      */
     public static final String BOOKING_DELAY_CHECK_QUEUE = "campushub.booking.delay.check.queue";
 
+    /**
+     * 活动域交换机（direct）：活动写操作后发布数据同步事件，消费端写ES。
+     */
+    public static final String ACTIVITY_EXCHANGE = "campushub.activity.exchange";
+
+    /**
+     * 路由键：活动数据同步。
+     */
+    public static final String ACTIVITY_SYNC_ROUTING_KEY = "activity.sync";
+
+    /**
+     * 消费队列：活动同步ES（查库拿最新值后写入索引）。
+     */
+    public static final String ACTIVITY_SYNC_QUEUE = "campushub.activity.sync.queue";
+
+    /**
+     * 事件类型：活动数据同步（本地消息表 event_type 取值）。
+     */
+    public static final String EVENT_TYPE_ACTIVITY_SYNC = "ACTIVITY_SYNC";
+
+    /**
+     * 同步动作：新增活动。
+     */
+    public static final String SYNC_ACTION_CREATE = "CREATE";
+
+    /**
+     * 同步动作：修改活动。
+     */
+    public static final String SYNC_ACTION_UPDATE = "UPDATE";
+
+    /**
+     * 同步动作：审核活动。
+     */
+    public static final String SYNC_ACTION_AUDIT = "AUDIT";
+
+    /**
+     * 同步动作：修改活动状态。
+     */
+    public static final String SYNC_ACTION_STATUS = "STATUS";
+
     private MqConstant() {
     }
 }
