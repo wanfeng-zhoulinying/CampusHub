@@ -15,10 +15,7 @@ public final class RedisTtlConstant {
     /** 缓存随机过期偏移最大分钟数 */
     public static final long CACHE_RANDOM_MINUTES = 10;
 
-    /** 缓存互斥重建锁过期时间，秒 */
-    public static final long CACHE_MUTEX_LOCK_SECONDS = 10;
-
-    /** 缓存互斥重建重试等待时间，毫秒 */
+    /** 缓存互斥重建锁等待重试间隔，毫秒（乘以重试次数=Redisson tryLock总等待窗口） */
     public static final long CACHE_MUTEX_RETRY_SLEEP_MILLIS = 50;
 
     /** 活动报名请求幂等时间，秒 */

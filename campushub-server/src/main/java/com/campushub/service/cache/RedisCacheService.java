@@ -7,17 +7,17 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
-import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 @Service
@@ -25,11 +25,9 @@ import java.util.function.Supplier;
 @Slf4j
 public class RedisCacheService {
 
-    private static final DefaultRedisScript<Long> RELEASE_MUTEX_LOCK_SCRIPT =
-            createReleaseMutexLockScript();
-
     private final StringRedisTemplate stringRedisTemplate;
     private final ObjectMapper objectMapper;
+    private final RedissonClient redissonClient;
 
     /**
      * Cache Aside 查询。
@@ -63,65 +61,76 @@ public class RedisCacheService {
     }
 
     /**
-     * 写入对象缓存。
-     * 在基础 TTL 上增加随机偏移，避免同类热点缓存同一时间集中失效。
+     * Cache Aside 查询（互斥锁防击穿），锁基于 Redisson：
+     * 1. 等待期通过 Pub/Sub 订阅锁释放信号、唤醒后立即竞争，替代旧版自旋sleep轮询；
+     * 2. 不指定 leaseTime，看门狗默认30s自动续期——规避"重建耗时超过锁TTL、锁提前
+     *    过期后并发重建"的隐患（旧版10s固定TTL两难：设短了业务没跑完锁先没，
+     *    设长了宕机后其他线程干等）；
+     * 3. 拿到锁后double check：等待期间他人可能已完成重建，直接返回避免重复回源。
      */
     public <T> T queryWithMutex(String key, Class<T> clazz, long baseMinutes, Supplier<T> dbLoader) {
-        for (int retry = 0; retry <= RedisCacheConstant.CACHE_MUTEX_RETRY_TIMES; retry++) {
-            String value = stringRedisTemplate.opsForValue().get(key);
-            if (value != null) {
-                if (RedisCacheConstant.NULL_CACHE_VALUE.equals(value)) {
+        String value = stringRedisTemplate.opsForValue().get(key);
+        if (value != null) {
+            if (RedisCacheConstant.NULL_CACHE_VALUE.equals(value)) {
+                return null;
+            }
+            try {
+                return objectMapper.readValue(value, clazz);
+            } catch (JsonProcessingException e) {
+                log.warn("[RedisCache] invalid cache value, deleting key={}", key, e);
+                delete(key);
+            }
+        }
+
+        RLock lock = redissonClient.getLock(RedisKeyConstant.CACHE_MUTEX_LOCK + key);
+        boolean locked = false;
+        try {
+            // 等待窗口与旧版自旋重试等宽（次数×间隔），超时视为重建卡死兜底回源
+            long waitMillis = (long) RedisCacheConstant.CACHE_MUTEX_RETRY_TIMES
+                    * RedisTtlConstant.CACHE_MUTEX_RETRY_SLEEP_MILLIS;
+            try {
+                locked = lock.tryLock(waitMillis, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                log.warn("[RedisCache] mutex wait interrupted, fallback to database key={}", key);
+                return loadAndCache(key, baseMinutes, dbLoader);
+            }
+            if (!locked) {
+                log.warn("[RedisCache] mutex rebuild timeout, fallback to database key={}", key);
+                return loadAndCache(key, baseMinutes, dbLoader);
+            }
+
+            String latest = stringRedisTemplate.opsForValue().get(key);
+            if (latest != null) {
+                if (RedisCacheConstant.NULL_CACHE_VALUE.equals(latest)) {
                     return null;
                 }
                 try {
-                    return objectMapper.readValue(value, clazz);
+                    return objectMapper.readValue(latest, clazz);
                 } catch (JsonProcessingException e) {
                     log.warn("[RedisCache] invalid cache value, deleting key={}", key, e);
                     delete(key);
                 }
             }
-
-            String lockKey = RedisKeyConstant.CACHE_MUTEX_LOCK + key;
-            String lockToken = UUID.randomUUID().toString();
-            Boolean locked = stringRedisTemplate.opsForValue().setIfAbsent(
-                    lockKey,
-                    lockToken,
-                    Duration.ofSeconds(RedisTtlConstant.CACHE_MUTEX_LOCK_SECONDS)
-            );
-            if (Boolean.TRUE.equals(locked)) {
-                try {
-                    T dbValue = dbLoader.get();
-                    if (dbValue == null) {
-                        setNull(key);
-                        return null;
-                    }
-                    set(key, dbValue, baseMinutes);
-                    return dbValue;
-                } finally {
-                    releaseMutexLock(lockKey, lockToken);
-                }
-            }
-
-            if (retry == RedisCacheConstant.CACHE_MUTEX_RETRY_TIMES) {
-                log.warn("[RedisCache] mutex rebuild timeout, fallback to database key={}", key);
-                T dbValue = dbLoader.get();
-                if (dbValue == null) {
-                    setNull(key);
-                    return null;
-                }
-                set(key, dbValue, baseMinutes);
-                return dbValue;
-            }
-
-            try {
-                Thread.sleep(RedisTtlConstant.CACHE_MUTEX_RETRY_SLEEP_MILLIS);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new IllegalStateException("cache mutex rebuild interrupted", e);
+            return loadAndCache(key, baseMinutes, dbLoader);
+        } finally {
+            if (locked) {
+                lock.unlock();
             }
         }
+    }
 
-        throw new IllegalStateException("cache mutex rebuild failed");
+    /**
+     * 私：回源数据库并回填缓存（含空值缓存）。
+     */
+    private <T> T loadAndCache(String key, long baseMinutes, Supplier<T> dbLoader) {
+        T dbValue = dbLoader.get();
+        if (dbValue == null) {
+            setNull(key);
+            return null;
+        }
+        set(key, dbValue, baseMinutes);
+        return dbValue;
     }
 
     public void set(String key, Object value, long baseMinutes) {
@@ -183,26 +192,6 @@ public class RedisCacheService {
             }
         }
         return keys;
-    }
-
-    private void releaseMutexLock(String lockKey, String lockToken) {
-        stringRedisTemplate.execute(
-                RELEASE_MUTEX_LOCK_SCRIPT,
-                List.of(lockKey),
-                lockToken
-        );
-    }
-
-    private static DefaultRedisScript<Long> createReleaseMutexLockScript() {
-        DefaultRedisScript<Long> script = new DefaultRedisScript<>();
-        script.setResultType(Long.class);
-        script.setScriptText(
-                "if redis.call('get', KEYS[1]) == ARGV[1] then " +
-                        "return redis.call('del', KEYS[1]) " +
-                        "end " +
-                        "return 0"
-        );
-        return script;
     }
 
     private long randomMinutes() {
