@@ -4,6 +4,7 @@ import type {
   ActivityDetailVO,
   ActivityFavoriteVO,
   ActivityListVO,
+  ActivitySearchResultVO,
   ActivitySignupVO,
   AdminActivityListVO,
   AdminActivitySaveDTO,
@@ -47,6 +48,8 @@ export const venueApi = {
 
 export const activityApi = {
   list: (query?: { keyword?: string; status?: number; auditStatus?: number }) => apiGet<ActivityListVO[]>('/activity/list', query),
+  search: (query: { keyword: string; pageNum?: number; pageSize?: number }) =>
+    apiGet<ActivitySearchResultVO>('/activity/search', query),
   hot: (limit = 10) => apiGet<HotActivityVO[]>('/activity/hot', { limit }),
   detail: (activityId: number) => apiGet<ActivityDetailVO>(`/activity/${activityId}`),
   signup: (activityId: number) => apiPost<number>('/activity/signup', { activityId }, 'user'),

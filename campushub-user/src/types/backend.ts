@@ -112,6 +112,29 @@ export interface HotActivityVO extends ActivityListVO {
   hotScore: number
 }
 
+export interface ActivitySearchItemVO {
+  id: number
+  /** 标题：ES 路径命中词带 <em> 高亮标签，MySQL 降级路径为纯文本 */
+  title: string
+  /** 内容命中摘要：ES 路径返回命中片段，MySQL 降级路径为空 */
+  content?: string
+  location: string
+  coverUrl?: string
+  signupLimit: number
+  currentSignupCount: number
+  status: number
+  activityStartTime: string
+  activityEndTime: string
+  /** BM25 相关性得分，降级路径恒为 0 */
+  score: number
+}
+
+export interface ActivitySearchResultVO {
+  /** 命中总数 */
+  total: number
+  records: ActivitySearchItemVO[]
+}
+
 export interface ActivitySignupVO {
   id: number
   activityId: number
