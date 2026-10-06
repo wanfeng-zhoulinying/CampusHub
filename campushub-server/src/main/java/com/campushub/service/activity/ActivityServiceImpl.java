@@ -157,7 +157,7 @@ public class ActivityServiceImpl implements ActivityService {
 
                 signup.setSignupStatus(ActivitySignupStatusConstant.SIGNED_UP);
                 signup.setWaitOrder(null);
-                activityMapper.saveSignup(signup);
+                saveOrReactivateSignup(signup, existedSignup);
                 messageService.createMessage(
                         currentUserId,
                         "活动报名成功",
@@ -176,7 +176,7 @@ public class ActivityServiceImpl implements ActivityService {
 
             signup.setSignupStatus(ActivitySignupStatusConstant.WAITLISTED);
             signup.setWaitOrder(reserveResult.getWaitOrder());
-            activityMapper.saveSignup(signup);
+            saveOrReactivateSignup(signup, existedSignup);
             messageService.createMessage(
                     currentUserId,
                     "活动候补成功",
@@ -195,6 +195,23 @@ public class ActivityServiceImpl implements ActivityService {
                 activitySignupRedisService.releaseReservedQuota(signupDTO.getActivityId(), currentUserId, reserveResult);
             }
             throw e;
+        }
+    }
+
+    /**
+     * 保存报名记录：首次报名走 INSERT；
+     * 重新报名（存在已取消记录）走 UPDATE 复活原记录，
+     * 避免 INSERT 撞 uk_activity_signup(activity_id, user_id) 唯一键。
+     */
+    private void saveOrReactivateSignup(ActivitySignup signup, ActivitySignup existedSignup) {
+        if (existedSignup == null) {
+            activityMapper.saveSignup(signup);
+            return;
+        }
+        signup.setId(existedSignup.getId());
+        int affectedRows = activityMapper.reSignup(signup);
+        if (affectedRows == 0) {
+            throw new BusinessException("报名状态已变化，请刷新后重试");
         }
     }
 

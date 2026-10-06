@@ -104,6 +104,19 @@
         )
     </insert>
 
+    <!-- 重新报名：复活已取消的原记录，避免 INSERT 撞 uk_activity_signup(activity_id, user_id) 唯一键 -->
+    <update id="reSignup">
+        update activity_signup
+        set signup_status = #{signupStatus},
+            signup_time = #{signupTime},
+            sign_status = #{signStatus},
+            cancel_time = null,
+            wait_order = #{waitOrder},
+            update_time = now()
+        where id = #{id}
+          and signup_status = 2
+    </update>
+
     <select id="getSignupById" resultType="com.campushub.entity.ActivitySignup">
         select
             id,

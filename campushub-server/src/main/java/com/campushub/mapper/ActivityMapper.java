@@ -25,6 +25,8 @@ public interface ActivityMapper {
 
     int saveSignup(ActivitySignup activitySignup);
 
+    int reSignup(ActivitySignup activitySignup);
+
     ActivitySignup getSignupById(@Param("id") Long id);
 
     ActivitySignup getSignupByActivityIdAndUserId(@Param("activityId") Long activityId,
