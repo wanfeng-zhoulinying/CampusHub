@@ -9,8 +9,16 @@ export function shortTime(value?: string) {
   return value.replace('T', ' ').slice(0, 16)
 }
 
+/** 取本地时区的 YYYY-MM-DD（toISOString 走 UTC，北京时间 0-8 点会取到前一天） */
+export function toDateString(value: Date) {
+  const y = value.getFullYear()
+  const m = String(value.getMonth() + 1).padStart(2, '0')
+  const d = String(value.getDate()).padStart(2, '0')
+  return `${y}-${m}-${d}`
+}
+
 export function today() {
-  return new Date().toISOString().slice(0, 10)
+  return toDateString(new Date())
 }
 
 export function percent(current: number, total: number) {

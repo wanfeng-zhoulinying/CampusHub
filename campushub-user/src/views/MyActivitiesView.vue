@@ -16,10 +16,10 @@
           <p class="meta">{{ item.activityLocation }} · {{ shortTime(item.signupTime) }}</p>
           <p v-if="item.waitOrder" class="meta">候补顺位：{{ item.waitOrder }}</p>
           <div class="quick-actions">
-            <van-button size="small" plain :disabled="item.signupStatus === ActivitySignupStatus.CANCELED" @click="cancel(item.id)">
+            <van-button size="small" plain :disabled="!canCancel(item)" @click="cancel(item.id)">
               取消
             </van-button>
-            <van-button size="small" type="primary" :disabled="item.signStatus === 1" @click="checkin(item.id)">签到</van-button>
+            <van-button size="small" type="primary" :disabled="!canCheckin(item)" @click="checkin(item.id)">签到</van-button>
             <van-button size="small" plain :to="`/activities/${item.activityId}`">详情</van-button>
           </div>
         </div>
@@ -31,13 +31,25 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { showSuccessToast } from 'vant'
+import { showFailToast, showSuccessToast } from 'vant'
 import AppShell from '../components/AppShell.vue'
 import EmptyState from '../components/EmptyState.vue'
 import { activityApi } from '../api'
 import { ActivitySignupStatus, signupStatusText } from '../constants/status'
 import { shortTime } from '../utils/format'
 import type { ActivitySignupVO } from '../types/backend'
+
+/** 可取消的报名状态：与后端 cancelSignup 的 signup_status in (1,3,4) 对齐 */
+const CANCELABLE_STATUSES: number[] = [
+  ActivitySignupStatus.SIGNED_UP,
+  ActivitySignupStatus.WAITLISTED,
+  ActivitySignupStatus.WAITLIST_CONFIRMED,
+]
+/** 可签到的报名状态：正式报名与候补转正（与后端 signActivity 校验对齐） */
+const CHECKINABLE_STATUSES: number[] = [
+  ActivitySignupStatus.SIGNED_UP,
+  ActivitySignupStatus.WAITLIST_CONFIRMED,
+]
 
 const status = ref(-1)
 const items = ref<ActivitySignupVO[]>([])
@@ -52,16 +64,32 @@ async function load() {
   items.value = await activityApi.my(status.value === -1 ? undefined : status.value)
 }
 
+function canCancel(item: ActivitySignupVO) {
+  return CANCELABLE_STATUSES.includes(item.signupStatus)
+}
+
+function canCheckin(item: ActivitySignupVO) {
+  return item.signStatus !== 1 && CHECKINABLE_STATUSES.includes(item.signupStatus)
+}
+
 async function cancel(id: number) {
-  await activityApi.cancel(id)
-  showSuccessToast('已取消报名')
-  await load()
+  try {
+    await activityApi.cancel(id)
+    showSuccessToast('已取消报名')
+    await load()
+  } catch (error) {
+    showFailToast((error as Error).message)
+  }
 }
 
 async function checkin(id: number) {
-  await activityApi.checkin(id)
-  showSuccessToast('签到成功')
-  await load()
+  try {
+    await activityApi.checkin(id)
+    showSuccessToast('签到成功')
+    await load()
+  } catch (error) {
+    showFailToast((error as Error).message)
+  }
 }
 
 onMounted(load)

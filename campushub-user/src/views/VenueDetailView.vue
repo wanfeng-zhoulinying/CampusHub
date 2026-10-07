@@ -52,14 +52,14 @@
 
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue'
-import { showSuccessToast } from 'vant'
+import { showFailToast, showSuccessToast } from 'vant'
 import { useRoute, useRouter } from 'vue-router'
 import AppShell from '../components/AppShell.vue'
 import EmptyState from '../components/EmptyState.vue'
 import { bookingApi, venueApi } from '../api'
 import { VenueSlotStatus } from '../constants/status'
 import { useAuthStore } from '../stores/auth'
-import { assetUrl, percent, today } from '../utils/format'
+import { assetUrl, percent, toDateString, today } from '../utils/format'
 import type { VenueDetailVO, VenueSlotVO } from '../types/backend'
 
 const route = useRoute()
@@ -80,7 +80,8 @@ async function load() {
 }
 
 function selectDate(value: Date) {
-  date.value = value.toISOString().slice(0, 10)
+  // 用本地时区取日期，避免 UTC 偏移导致查询到前一天的时段
+  date.value = toDateString(value)
   showCalendar.value = false
   void load()
 }
@@ -97,14 +98,29 @@ function openBooking(slotId: number, capacity: number) {
 }
 
 async function createBooking() {
-  await bookingApi.create({
-    venueId,
-    slotId: bookingForm.slotId,
-    personCount: bookingForm.personCount,
-    remark: bookingForm.remark,
-  })
-  showSuccessToast('预约成功')
-  await load()
+  const count = Number(bookingForm.personCount)
+  // 人数校验：至少 1 人且不超过时段剩余容量，提前拦截非法提交
+  if (!Number.isInteger(count) || count < 1) {
+    showFailToast('预约人数至少为 1')
+    return
+  }
+  if (count > maxCapacity.value) {
+    showFailToast(`该时段最多可约 ${maxCapacity.value} 人`)
+    return
+  }
+  try {
+    await bookingApi.create({
+      venueId,
+      slotId: bookingForm.slotId,
+      personCount: count,
+      remark: bookingForm.remark,
+    })
+    showSuccessToast('预约成功')
+    await load()
+  } catch (error) {
+    // 展示后端业务错误（如：时段已被订满、信用分不足）
+    showFailToast((error as Error).message)
+  }
 }
 
 onMounted(load)
