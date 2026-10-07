@@ -10,6 +10,13 @@
       </div>
     </section>
 
+    <!-- 后端规则：信用分低于 60 分将无法预约场地、报名活动 -->
+    <van-notice-bar
+      v-if="overview && overview.creditScore < 60"
+      left-icon="info-o"
+      text="信用分低于 60 分：暂时无法预约场地、报名活动。按时核销与申诉通过可恢复分数。"
+    />
+
     <div class="section-title">
       <h2>信用记录</h2>
     </div>

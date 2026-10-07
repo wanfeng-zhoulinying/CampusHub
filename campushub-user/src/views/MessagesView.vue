@@ -27,6 +27,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
+import { showFailToast } from 'vant'
 import AppShell from '../components/AppShell.vue'
 import EmptyState from '../components/EmptyState.vue'
 import { messageApi } from '../api'
@@ -45,13 +46,21 @@ const statusOptions = [
 ]
 
 async function load() {
-  messages.value = await messageApi.list(readStatus.value === -1 ? undefined : readStatus.value)
+  try {
+    messages.value = await messageApi.list(readStatus.value === -1 ? undefined : readStatus.value)
+  } catch (error) {
+    showFailToast((error as Error).message)
+  }
 }
 
 async function read(id: number) {
-  await messageApi.read(id)
-  await auth.refreshUnread()
-  await load()
+  try {
+    await messageApi.read(id)
+    await auth.refreshUnread()
+    await load()
+  } catch (error) {
+    showFailToast((error as Error).message)
+  }
 }
 
 onMounted(load)
