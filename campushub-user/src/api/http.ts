@@ -30,15 +30,27 @@ function tokenFor(mode: TokenMode) {
 export async function request<T>(url: string, options: RequestOptions = {}): Promise<T> {
   const mode = options.tokenMode ?? 'public'
   const token = tokenFor(mode)
-  const response = await fetch(`${BASE_URL}${url}`, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...(options.headers || {}),
-    },
-  })
-  const body = (await response.json()) as ApiResult<T>
+  let response: Response
+  try {
+    response = await fetch(`${BASE_URL}${url}`, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(options.headers || {}),
+      },
+    })
+  } catch {
+    // fetch 本身失败（网络不可达等），转成可读的业务错误由调用方提示
+    throw new Error('网络异常，请检查网络或稍后重试')
+  }
+  let body: ApiResult<T>
+  try {
+    body = (await response.json()) as ApiResult<T>
+  } catch {
+    // 网关/代理返回非 JSON（如后端宕机时代理抛出的 HTML 错误页），统一转成业务错误
+    throw new Error(response.ok ? '响应格式异常' : `服务异常（HTTP ${response.status}）`)
+  }
   if (body.code !== 1) {
     const message = body.message || '请求失败'
     showToast(message)

@@ -24,7 +24,12 @@ export const router = createRouter({
 router.beforeEach(async (to) => {
   const auth = useAuthStore()
   if (auth.isAuthenticated && !auth.profile) {
-    await auth.loadProfile()
+    try {
+      await auth.loadProfile()
+    } catch {
+      // 身份加载失败（后端不可用/瞬时抖动）不阻断导航，降级为页面级错误提示；
+      // token 失效的场景由 http.ts 统一登出处理，不会走到这里
+    }
   }
   if (to.meta.auth && !auth.isAuthenticated) return '/login'
   if (to.meta.admin && !auth.isAdmin) return '/profile'
