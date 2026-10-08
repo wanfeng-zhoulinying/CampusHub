@@ -22,6 +22,16 @@
             <div ref="chartRef" class="chart"></div>
           </div>
         </article>
+        <article class="card" style="margin-top: 14px">
+          <div class="card__body">
+            <div ref="hotVenueChartRef" class="chart"></div>
+          </div>
+        </article>
+        <article class="card" style="margin-top: 14px">
+          <div class="card__body">
+            <div ref="hotActivityChartRef" class="chart"></div>
+          </div>
+        </article>
       </van-tab>
 
       <van-tab title="场地" name="venues">
@@ -59,8 +69,8 @@
               <p class="meta">报名 {{ item.currentSignupCount }} / {{ item.signupLimit }}</p>
               <div class="quick-actions">
                 <van-button size="small" plain @click="openActivity(item)">编辑</van-button>
-                <van-button size="small" type="success" @click="audit(item.id, 1)">通过</van-button>
-                <van-button size="small" type="danger" plain @click="audit(item.id, 2)">驳回</van-button>
+                <van-button size="small" type="success" @click="openAudit(item.id, 1)">通过</van-button>
+                <van-button size="small" type="danger" plain @click="openAudit(item.id, 2)">驳回</van-button>
               </div>
             </div>
           </article>
@@ -70,7 +80,10 @@
       <van-tab title="申诉" name="appeals">
         <div class="section-title">
           <h2>违约申诉</h2>
-          <van-button size="small" plain @click="loadAppeals">刷新</van-button>
+          <div style="display: flex; gap: 8px">
+            <van-button size="small" plain @click="loadAppeals">刷新</van-button>
+            <van-button size="small" type="danger" @click="breachDialog = true">登记违约</van-button>
+          </div>
         </div>
         <div class="stack">
           <article v-for="item in appeals" :key="item.id" class="card">
@@ -82,8 +95,8 @@
               <p>{{ item.reason }}</p>
               <p class="meta">扣分 {{ item.deductScore }} · {{ shortTime(item.appealTime) }}</p>
               <div class="quick-actions">
-                <van-button size="small" type="success" :disabled="item.appealStatus !== 0" @click="auditAppeal(item.id, 1)">通过</van-button>
-                <van-button size="small" type="danger" plain :disabled="item.appealStatus !== 0" @click="auditAppeal(item.id, 2)">驳回</van-button>
+                <van-button size="small" type="success" :disabled="item.appealStatus !== 0" @click="openAppealAudit(item.id, 1)">通过</van-button>
+                <van-button size="small" type="danger" plain :disabled="item.appealStatus !== 0" @click="openAppealAudit(item.id, 2)">驳回</van-button>
               </div>
             </div>
           </article>
@@ -116,16 +129,56 @@
         <van-field v-model="activityForm.content" label="内容" type="textarea" rows="2" />
       </van-cell-group>
     </van-dialog>
+
+    <!-- 活动审核：意见可编辑，替换原写死的审核备注 -->
+    <van-dialog
+      v-model:show="auditDialog"
+      :title="auditForm.status === 1 ? '审核通过' : '驳回活动'"
+      show-cancel-button
+      @confirm="confirmAudit"
+    >
+      <van-field v-model="auditForm.remark" label="审核意见" type="textarea" rows="2" placeholder="选填，展示给发布者" />
+    </van-dialog>
+
+    <!-- 申诉审核：意见可编辑 -->
+    <van-dialog
+      v-model:show="appealAuditDialog"
+      :title="appealAuditForm.status === 1 ? '申诉通过' : '驳回申诉'"
+      show-cancel-button
+      @confirm="confirmAppealAudit"
+    >
+      <van-field v-model="appealAuditForm.remark" label="审核意见" type="textarea" rows="2" placeholder="选填" />
+    </van-dialog>
+
+    <!-- 登记违约：扣信用分并触发通知 -->
+    <van-dialog v-model:show="breachDialog" title="登记违约" show-cancel-button @confirm="confirmBreach">
+      <van-cell-group inset>
+        <van-field v-model.number="breachForm.bookingId" type="number" label="预约ID" placeholder="预约记录 id" required />
+        <van-field v-model.number="breachForm.deductScore" type="number" label="扣分" required />
+        <van-field v-model="breachForm.reason" label="原因" type="textarea" rows="2" placeholder="违约事实描述" required />
+      </van-cell-group>
+    </van-dialog>
   </AppShell>
 </template>
 
 <script setup lang="ts">
 import { nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
-import { showSuccessToast, showToast } from 'vant'
-import * as echarts from 'echarts'
+import { showFailToast, showSuccessToast, showToast } from 'vant'
+// echarts 按需引入：只打包饼图/柱状图与所需组件，替代整包 import 减小 chunk 体积
+import * as echarts from 'echarts/core'
+import { BarChart, PieChart } from 'echarts/charts'
+import { GridComponent, TitleComponent, TooltipComponent } from 'echarts/components'
+import { CanvasRenderer } from 'echarts/renderers'
 import AppShell from '../components/AppShell.vue'
-import { adminApi } from '../api'
-import { activityStatusText, appealStatusText, appealTagType, auditStatusText, auditTagType } from '../constants/status'
+import { activityApi, adminApi, venueApi } from '../api'
+import {
+  activityStatusText,
+  appealStatusText,
+  appealTagType,
+  auditStatusText,
+  auditTagType,
+  bookingStatusText,
+} from '../constants/status'
 import { useAuthStore } from '../stores/auth'
 import { shortTime } from '../utils/format'
 import type {
@@ -134,9 +187,13 @@ import type {
   AdminBookingBreachAppealVO,
   AdminBookingStatusStatVO,
   AdminDashboardOverviewVO,
+  AdminHotActivityVO,
+  AdminHotVenueVO,
   AdminVenueListVO,
   AdminVenueSaveDTO,
 } from '../types/backend'
+
+echarts.use([BarChart, PieChart, GridComponent, TitleComponent, TooltipComponent, CanvasRenderer])
 
 const auth = useAuthStore()
 const tab = ref('dashboard')
@@ -145,8 +202,24 @@ const bookingStats = ref<AdminBookingStatusStatVO[]>([])
 const venues = ref<AdminVenueListVO[]>([])
 const activities = ref<AdminActivityListVO[]>([])
 const appeals = ref<AdminBookingBreachAppealVO[]>([])
+const hotVenues = ref<AdminHotVenueVO[]>([])
+const hotActivities = ref<AdminHotActivityVO[]>([])
 const chartRef = ref<HTMLDivElement>()
-let chart: echarts.ECharts | undefined
+const hotVenueChartRef = ref<HTMLDivElement>()
+const hotActivityChartRef = ref<HTMLDivElement>()
+let chart: ReturnType<typeof echarts.init> | undefined
+let hotVenueChart: ReturnType<typeof echarts.init> | undefined
+let hotActivityChart: ReturnType<typeof echarts.init> | undefined
+
+/** 活动审核弹窗（意见可编辑，替换原写死文案） */
+const auditDialog = ref(false)
+const auditForm = reactive({ activityId: 0, status: 1, remark: '' })
+/** 申诉审核弹窗 */
+const appealAuditDialog = ref(false)
+const appealAuditForm = reactive({ appealId: 0, status: 1, remark: '' })
+/** 登记违约弹窗 */
+const breachDialog = ref(false)
+const breachForm = reactive({ bookingId: undefined as number | undefined, deductScore: 10, reason: '' })
 
 const venueDialog = ref(false)
 const activityDialog = ref(false)
@@ -175,27 +248,62 @@ const activityForm = reactive<AdminActivitySaveDTO & { id?: number }>({
 })
 
 async function loadDashboard() {
-  const [overviewData, bookingData] = await Promise.all([adminApi.overview(), adminApi.bookingStatus()])
+  const [overviewData, bookingData, hotVenueData, hotActivityData] = await Promise.all([
+    adminApi.overview(),
+    adminApi.bookingStatus(),
+    adminApi.hotVenues(),
+    adminApi.hotActivities(),
+  ])
   overview.value = overviewData
   bookingStats.value = bookingData
+  hotVenues.value = hotVenueData
+  hotActivities.value = hotActivityData
   await nextTick()
-  renderChart()
+  renderCharts()
 }
 
-function renderChart() {
-  if (!chartRef.value) return
-  chart = chart || echarts.init(chartRef.value)
-  chart.setOption({
-    title: { text: '预约状态分布', left: 'center', textStyle: { fontSize: 14 } },
-    tooltip: { trigger: 'item' },
-    series: [
-      {
-        type: 'pie',
-        radius: ['38%', '68%'],
-        data: bookingStats.value.map((item) => ({ name: `状态 ${item.status}`, value: item.count })),
-      },
-    ],
-  })
+/** 渲染看板三张图：预约状态饼图 + 热门场地/热门活动条形图 */
+function renderCharts() {
+  if (chartRef.value) {
+    chart = chart ?? echarts.init(chartRef.value)
+    chart.setOption({
+      title: { text: '预约状态分布', left: 'center', textStyle: { fontSize: 14 } },
+      tooltip: { trigger: 'item' },
+      series: [
+        {
+          type: 'pie',
+          radius: ['38%', '68%'],
+          data: bookingStats.value.map((item) => ({
+            name: bookingStatusText[item.status] || `状态 ${item.status}`,
+            value: item.count,
+          })),
+        },
+      ],
+    })
+  }
+  if (hotVenueChartRef.value) {
+    hotVenueChart = hotVenueChart ?? echarts.init(hotVenueChartRef.value)
+    // reverse：echarts 类目轴自下而上绘制，反转后 TOP1 显示在最上方
+    hotVenueChart.setOption({
+      title: { text: '热门场地 TOP5（预约数）', left: 'center', textStyle: { fontSize: 14 } },
+      tooltip: { trigger: 'axis' },
+      grid: { left: 8, right: 24, bottom: 8, top: 36, containLabel: true },
+      xAxis: { type: 'value' },
+      yAxis: { type: 'category', data: [...hotVenues.value].reverse().map((item) => item.venueName) },
+      series: [{ type: 'bar', barWidth: 12, data: [...hotVenues.value].reverse().map((item) => item.bookingCount) }],
+    })
+  }
+  if (hotActivityChartRef.value) {
+    hotActivityChart = hotActivityChart ?? echarts.init(hotActivityChartRef.value)
+    hotActivityChart.setOption({
+      title: { text: '热门活动 TOP5（报名数）', left: 'center', textStyle: { fontSize: 14 } },
+      tooltip: { trigger: 'axis' },
+      grid: { left: 8, right: 24, bottom: 8, top: 36, containLabel: true },
+      xAxis: { type: 'value' },
+      yAxis: { type: 'category', data: [...hotActivities.value].reverse().map((item) => item.activityTitle) },
+      series: [{ type: 'bar', barWidth: 12, data: [...hotActivities.value].reverse().map((item) => item.signupCount) }],
+    })
+  }
 }
 
 async function loadVenues() {
@@ -210,7 +318,7 @@ async function loadAppeals() {
   appeals.value = await adminApi.appeals()
 }
 
-function openVenue(item?: AdminVenueListVO) {
+async function openVenue(item?: AdminVenueListVO) {
   Object.assign(venueForm, {
     id: item?.id,
     name: item?.name || '',
@@ -221,6 +329,15 @@ function openVenue(item?: AdminVenueListVO) {
     description: '',
     status: item?.status ?? 1,
   })
+  if (item) {
+    // 编辑时列表接口不含 description，回源详情补齐，避免保存把原描述清空
+    try {
+      const detail = await venueApi.detail(item.id)
+      venueForm.description = detail.description ?? ''
+    } catch {
+      // 详情拉取失败时仍可编辑其它字段
+    }
+  }
   venueDialog.value = true
 }
 
@@ -248,12 +365,13 @@ async function toggleVenue(item: AdminVenueListVO) {
   await loadVenues()
 }
 
-function openActivity(item?: AdminActivityListVO) {
+async function openActivity(item?: AdminActivityListVO) {
   Object.assign(activityForm, {
     id: item?.id,
-    publisherId: auth.profile?.id || 1001,
+    // 新增时发布者为当前管理员；编辑时以详情接口返回的原发布者为准
+    publisherId: auth.profile?.id ?? 0,
     title: item?.title || '',
-    coverUrl: '',
+    coverUrl: item?.coverUrl || '',
     content: '',
     location: item?.location || '',
     venueId: item?.venueId,
@@ -265,6 +383,16 @@ function openActivity(item?: AdminActivityListVO) {
     waitLimit: item?.waitLimit || 5,
     status: item?.status || 1,
   })
+  if (item) {
+    // 编辑时列表接口不含 content/publisherId，回源详情补齐，避免保存清空正文或改错发布者
+    try {
+      const detail = await activityApi.detail(item.id)
+      activityForm.content = detail.content ?? ''
+      activityForm.publisherId = detail.publisherId
+    } catch {
+      // 详情拉取失败时仍可编辑其它字段
+    }
+  }
   activityDialog.value = true
 }
 
@@ -293,16 +421,53 @@ async function saveActivity() {
   await loadActivities()
 }
 
-async function audit(activityId: number, status: number) {
-  await adminApi.auditActivity(activityId, auth.profile?.id || 1001, status, status === 1 ? '内容合规，准予发布' : '内容需要补充后再提交')
-  showSuccessToast(status === 1 ? '已通过' : '已驳回')
+/** 打开活动审核弹窗：预填默认意见，管理员可修改后提交 */
+function openAudit(activityId: number, status: number) {
+  auditForm.activityId = activityId
+  auditForm.status = status
+  auditForm.remark = status === 1 ? '内容合规，准予发布' : '内容需要补充后再提交'
+  auditDialog.value = true
+}
+
+async function confirmAudit() {
+  if (!auth.profile?.id) {
+    showFailToast('登录信息缺失，请重新登录')
+    return
+  }
+  await adminApi.auditActivity(auditForm.activityId, auth.profile.id, auditForm.status, auditForm.remark.trim() || undefined)
+  showSuccessToast(auditForm.status === 1 ? '已通过' : '已驳回')
   await loadActivities()
 }
 
-async function auditAppeal(appealId: number, status: number) {
-  await adminApi.auditAppeal(appealId, status, status === 1 ? '申诉通过，恢复信用分' : '证据不足，驳回申诉')
-  showSuccessToast(status === 1 ? '申诉已通过' : '申诉已驳回')
+/** 打开申诉审核弹窗：预填默认意见 */
+function openAppealAudit(appealId: number, status: number) {
+  appealAuditForm.appealId = appealId
+  appealAuditForm.status = status
+  appealAuditForm.remark = status === 1 ? '申诉通过，恢复信用分' : '证据不足，驳回申诉'
+  appealAuditDialog.value = true
+}
+
+async function confirmAppealAudit() {
+  await adminApi.auditAppeal(appealAuditForm.appealId, appealAuditForm.status, appealAuditForm.remark.trim() || undefined)
+  showSuccessToast(appealAuditForm.status === 1 ? '申诉已通过' : '申诉已驳回')
   await loadAppeals()
+}
+
+/** 登记违约：校验后调接口扣分，成功后复位表单 */
+async function confirmBreach() {
+  if (!breachForm.bookingId || !Number.isInteger(breachForm.bookingId) || breachForm.bookingId <= 0) {
+    showFailToast('请填写有效的预约 ID')
+    return
+  }
+  if (!breachForm.reason.trim()) {
+    showFailToast('请填写违约原因')
+    return
+  }
+  await adminApi.markBreach(breachForm.bookingId, breachForm.reason.trim(), breachForm.deductScore)
+  showSuccessToast('违约已登记，已扣分并通知用户')
+  breachDialog.value = false
+  breachForm.bookingId = undefined
+  breachForm.reason = ''
 }
 
 watch(tab, async (value) => {
@@ -310,7 +475,7 @@ watch(tab, async (value) => {
     if (value === 'venues' && !venues.value.length) await loadVenues()
     if (value === 'activities' && !activities.value.length) await loadActivities()
     if (value === 'appeals' && !appeals.value.length) await loadAppeals()
-    if (value === 'dashboard') await nextTick(renderChart)
+    if (value === 'dashboard') await nextTick(renderCharts)
   } catch (error) {
     showToast(error instanceof Error ? error.message : '加载失败')
   }
@@ -321,6 +486,9 @@ onMounted(async () => {
 })
 
 onBeforeUnmount(() => {
+  // 三个图表实例统一释放，避免重复进出工作台造成内存泄漏
   chart?.dispose()
+  hotVenueChart?.dispose()
+  hotActivityChart?.dispose()
 })
 </script>

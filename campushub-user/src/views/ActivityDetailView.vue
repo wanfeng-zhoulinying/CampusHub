@@ -10,6 +10,11 @@
           </van-tag>
         </div>
         <p class="meta">{{ activity.location }}</p>
+        <!-- 审核意见：审核后才有值，发布者可看到驳回理由，管理员可核对上次提交的意见 -->
+        <p v-if="activity.auditRemark" class="meta">
+          <van-tag :type="auditTagType[activity.auditStatus]">{{ auditStatusText[activity.auditStatus] }}</van-tag>
+          {{ activity.auditRemark }}
+        </p>
         <p>{{ activity.content || '暂无活动介绍' }}</p>
         <van-progress :percentage="percent(activity.currentSignupCount, activity.signupLimit)" />
         <p class="meta">
@@ -70,7 +75,14 @@ import { useRoute, useRouter } from 'vue-router'
 import AppShell from '../components/AppShell.vue'
 import EmptyState from '../components/EmptyState.vue'
 import { activityApi, socialApi } from '../api'
-import { ActivitySignupStatus, ActivityStatus, activityStatusText, activityTagType } from '../constants/status'
+import {
+  ActivitySignupStatus,
+  ActivityStatus,
+  activityStatusText,
+  activityTagType,
+  auditStatusText,
+  auditTagType,
+} from '../constants/status'
 import { useAuthStore } from '../stores/auth'
 import { assetUrl, percent, shortTime } from '../utils/format'
 import type { ActivityCommentVO, ActivityDetailVO, ActivitySignupVO } from '../types/backend'
