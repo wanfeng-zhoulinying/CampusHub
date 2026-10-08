@@ -23,7 +23,16 @@
           </van-button>
           <!-- 已报名/候补中时提供取消入口，闭环不必跳转"我的报名"页 -->
           <van-button v-if="mySignup" plain :loading="loading" @click="cancelSignup">取消报名</van-button>
-          <van-button plain icon="star-o" :loading="loading" @click="favorite">收藏</van-button>
+          <!-- 收藏开关：图标空心/实心 + 文字收藏/取消收藏 + 金色高亮三重反馈 -->
+          <van-button
+            plain
+            :icon="favorited ? 'star' : 'star-o'"
+            :color="favorited ? '#f7a628' : undefined"
+            :loading="loading"
+            @click="favorite"
+          >
+            {{ favorited ? '取消收藏' : '收藏' }}
+          </van-button>
         </div>
       </div>
     </article>
@@ -79,6 +88,8 @@ const loading = ref(false)
 const mySignups = ref<ActivitySignupVO[]>([])
 /** 报名冷却 5 秒：与后端防重窗口对齐，双保险防连点 */
 const cooldown = ref(false)
+/** 当前用户是否已收藏本活动：进页面时拉取收藏列表判断，点击后按接口响应更新 */
+const favorited = ref(false)
 
 /** 当前用户在本活动的有效报名记录（已取消的不算） */
 const mySignup = computed(() => {
@@ -122,6 +133,8 @@ async function load() {
   if (auth.isAuthenticated) {
     comments.value = await socialApi.comments(activityId)
     mySignups.value = await activityApi.my()
+    // 同步收藏状态：收藏列表里能找到本活动即视为已收藏
+    favorited.value = (await socialApi.favorites()).some((item) => item.activityId === activityId)
   }
 }
 
@@ -170,8 +183,11 @@ async function favorite() {
   if (!(await requireLogin())) return
   loading.value = true
   try {
-    const favorited = await socialApi.favorite(activityId)
-    showSuccessToast(favorited ? '已收藏' : '已取消收藏')
+    // 接口是开关语义：返回 true 表示已收藏，false 表示已取消
+    favorited.value = await socialApi.favorite(activityId)
+    showSuccessToast(favorited.value ? '已收藏' : '已取消收藏')
+  } catch (error) {
+    showFailToast((error as Error).message)
   } finally {
     loading.value = false
   }
