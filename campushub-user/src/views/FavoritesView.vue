@@ -9,7 +9,7 @@
         <div class="card__body">
           <div class="line">
             <h3 class="title">{{ item.activityTitle }}</h3>
-            <van-tag>{{ activityStatusText[item.status] }}</van-tag>
+            <van-tag :type="activityTagType[item.status]">{{ activityStatusText[item.status] }}</van-tag>
           </div>
           <p class="meta">{{ item.location }} · {{ shortTime(item.activityStartTime) }}</p>
           <div class="quick-actions">
@@ -35,7 +35,7 @@ import { showFailToast, showSuccessToast } from 'vant'
 import AppShell from '../components/AppShell.vue'
 import EmptyState from '../components/EmptyState.vue'
 import { socialApi } from '../api'
-import { activityStatusText } from '../constants/status'
+import { activityStatusText, activityTagType } from '../constants/status'
 import { assetUrl, shortTime } from '../utils/format'
 import type { ActivityFavoriteVO } from '../types/backend'
 

@@ -92,3 +92,50 @@ export const messageTypeText: Record<number, string> = {
   3: '审核',
   4: '信用',
 }
+
+/* ============ 状态 → 徽标语义色映射 ============
+ * 统一配色语义：绿=可行动/顺利完成，蓝=进行中，橙=待处理/候补/错过提醒，
+ * 红=异常态（违约/驳回/取消），灰=已结束/已取消的弱化态 */
+
+/** van-tag type 属性接受的字面量集合（Vant TagType 的子集） */
+export type TagType = 'default' | 'primary' | 'success' | 'warning' | 'danger'
+
+/** 活动状态徽标色：报名中绿、进行中蓝、报名结束橙（错过提醒）、已取消红 */
+export const activityTagType: Record<number, TagType> = {
+  1: 'default',
+  2: 'success',
+  3: 'primary',
+  4: 'default',
+  5: 'danger',
+  6: 'warning',
+}
+
+/** 预约状态徽标色：已预约蓝、已核销绿、已取消灰、已违约红、申诉通过绿（恢复） */
+export const bookingTagType: Record<number, TagType> = {
+  1: 'primary',
+  2: 'success',
+  3: 'default',
+  4: 'danger',
+  5: 'success',
+}
+
+/** 报名状态徽标色：已报名绿、已取消灰、候补中橙、候补转正蓝 */
+export const signupTagType: Record<number, TagType> = {
+  1: 'success',
+  2: 'default',
+  3: 'warning',
+  4: 'primary',
+}
+
+/** 审核/申诉状态徽标色：待审核橙、已通过绿、已驳回红 */
+export const auditTagType: Record<number, TagType> = {
+  0: 'warning',
+  1: 'success',
+  2: 'danger',
+}
+
+export const appealTagType: Record<number, TagType> = {
+  0: 'warning',
+  1: 'success',
+  2: 'danger',
+}

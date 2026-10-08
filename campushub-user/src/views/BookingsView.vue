@@ -11,7 +11,7 @@
         <div class="card__body stack">
           <div class="line">
             <h3 class="title">{{ item.venueName }}</h3>
-            <van-tag>{{ bookingStatusText[item.status] }}</van-tag>
+            <van-tag :type="bookingTagType[item.status]">{{ bookingStatusText[item.status] }}</van-tag>
           </div>
           <p class="meta">{{ item.venueLocation }}</p>
           <p>{{ item.bookingDate }} {{ item.startTime.slice(0, 5) }} - {{ item.endTime.slice(0, 5) }}</p>
@@ -42,7 +42,7 @@ import { showSuccessToast } from 'vant'
 import AppShell from '../components/AppShell.vue'
 import EmptyState from '../components/EmptyState.vue'
 import { bookingApi, creditApi } from '../api'
-import { BookingStatus, bookingStatusText } from '../constants/status'
+import { BookingStatus, bookingStatusText, bookingTagType } from '../constants/status'
 import type { BookingListVO } from '../types/backend'
 
 const status = ref(-1)

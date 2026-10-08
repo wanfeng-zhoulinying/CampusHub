@@ -11,7 +11,7 @@
         <div class="card__body stack">
           <div class="line">
             <h3 class="title">{{ item.activityTitle }}</h3>
-            <van-tag>{{ signupStatusText[item.signupStatus] }}</van-tag>
+            <van-tag :type="signupTagType[item.signupStatus]">{{ signupStatusText[item.signupStatus] }}</van-tag>
           </div>
           <p class="meta">{{ item.activityLocation }} · {{ shortTime(item.signupTime) }}</p>
           <p v-if="item.waitOrder" class="meta">候补顺位：{{ item.waitOrder }}</p>
@@ -35,7 +35,7 @@ import { showFailToast, showSuccessToast } from 'vant'
 import AppShell from '../components/AppShell.vue'
 import EmptyState from '../components/EmptyState.vue'
 import { activityApi } from '../api'
-import { ActivitySignupStatus, signupStatusText } from '../constants/status'
+import { ActivitySignupStatus, signupStatusText, signupTagType } from '../constants/status'
 import { shortTime } from '../utils/format'
 import type { ActivitySignupVO } from '../types/backend'
 

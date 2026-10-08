@@ -21,6 +21,8 @@
       共 {{ total }} 条与「{{ activeKeyword }}」相关的结果
     </p>
 
+    <!-- 下拉刷新：重置分页回到第一页（搜索/浏览模式各自生效） -->
+    <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
     <van-list
       v-model:loading="loading"
       :finished="finished"
@@ -44,7 +46,7 @@
             <div class="line">
               <!-- 搜索结果标题含 ES 高亮标签，消毒后以 v-html 渲染命中词 -->
               <h3 class="title" v-html="renderHighlight(item.title)"></h3>
-              <van-tag :type="item.status === ActivityStatus.SIGNING_UP ? 'success' : 'default'">
+              <van-tag :type="activityTagType[item.status]">
                 {{ activityStatusText[item.status] }}
               </van-tag>
             </div>
@@ -58,6 +60,7 @@
         </article>
       </div>
     </van-list>
+    </van-pull-refresh>
 
     <EmptyState
       v-if="finished && !items.length"
@@ -72,7 +75,7 @@ import { showFailToast } from 'vant'
 import AppShell from '../components/AppShell.vue'
 import EmptyState from '../components/EmptyState.vue'
 import { activityApi } from '../api'
-import { ActivityAuditStatus, ActivityStatus, activityStatusText } from '../constants/status'
+import { ActivityAuditStatus, ActivityStatus, activityStatusText, activityTagType } from '../constants/status'
 import { assetUrl, percent, shortTime } from '../utils/format'
 import type { ActivityListVO, ActivitySearchItemVO } from '../types/backend'
 
@@ -103,6 +106,8 @@ const total = ref(0)
 const page = ref(1)
 const loading = ref(false)
 const finished = ref(false)
+/** 下拉刷新动画开关 */
+const refreshing = ref(false)
 const loadFailed = ref(false)
 
 const isSearchMode = computed(() => activeKeyword.value !== '')
@@ -202,6 +207,19 @@ function restart() {
   finished.value = false
   loading.value = true
   void load()
+}
+
+/** 下拉刷新：重置分页重拉首页，完成后收起动画 */
+async function onRefresh() {
+  try {
+    page.value = 1
+    items.value = []
+    total.value = 0
+    finished.value = false
+    await load()
+  } finally {
+    refreshing.value = false
+  }
 }
 
 function submitSearch() {

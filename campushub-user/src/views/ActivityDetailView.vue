@@ -5,7 +5,7 @@
       <div class="card__body stack">
         <div class="line">
           <h2 class="title">{{ activity.title }}</h2>
-          <van-tag :type="activity.status === ActivityStatus.SIGNING_UP ? 'success' : 'default'">
+          <van-tag :type="activityTagType[activity.status]">
             {{ activityStatusText[activity.status] }}
           </van-tag>
         </div>
@@ -70,7 +70,7 @@ import { useRoute, useRouter } from 'vue-router'
 import AppShell from '../components/AppShell.vue'
 import EmptyState from '../components/EmptyState.vue'
 import { activityApi, socialApi } from '../api'
-import { ActivitySignupStatus, ActivityStatus, activityStatusText } from '../constants/status'
+import { ActivitySignupStatus, ActivityStatus, activityStatusText, activityTagType } from '../constants/status'
 import { useAuthStore } from '../stores/auth'
 import { assetUrl, percent, shortTime } from '../utils/format'
 import type { ActivityCommentVO, ActivityDetailVO, ActivitySignupVO } from '../types/backend'

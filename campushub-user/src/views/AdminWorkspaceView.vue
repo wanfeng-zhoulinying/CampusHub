@@ -53,7 +53,7 @@
             <div class="card__body stack">
               <div class="line">
                 <h3 class="title">{{ item.title }}</h3>
-                <van-tag>{{ auditStatusText[item.auditStatus] }}</van-tag>
+                <van-tag :type="auditTagType[item.auditStatus]">{{ auditStatusText[item.auditStatus] }}</van-tag>
               </div>
               <p class="meta">{{ item.location }} · {{ activityStatusText[item.status] }}</p>
               <p class="meta">报名 {{ item.currentSignupCount }} / {{ item.signupLimit }}</p>
@@ -77,7 +77,7 @@
             <div class="card__body stack">
               <div class="line">
                 <h3 class="title">{{ item.realName }} · {{ item.bookingNo }}</h3>
-                <van-tag>{{ appealStatusText[item.appealStatus] }}</van-tag>
+                <van-tag :type="appealTagType[item.appealStatus]">{{ appealStatusText[item.appealStatus] }}</van-tag>
               </div>
               <p>{{ item.reason }}</p>
               <p class="meta">扣分 {{ item.deductScore }} · {{ shortTime(item.appealTime) }}</p>
@@ -125,7 +125,7 @@ import { showSuccessToast, showToast } from 'vant'
 import * as echarts from 'echarts'
 import AppShell from '../components/AppShell.vue'
 import { adminApi } from '../api'
-import { activityStatusText, appealStatusText, auditStatusText } from '../constants/status'
+import { activityStatusText, appealStatusText, appealTagType, auditStatusText, auditTagType } from '../constants/status'
 import { useAuthStore } from '../stores/auth'
 import { shortTime } from '../utils/format'
 import type {

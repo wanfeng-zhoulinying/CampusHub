@@ -43,7 +43,7 @@
         <div class="card__body">
           <div class="line">
             <strong>{{ item.bookingNo }}</strong>
-            <van-tag>{{ appealStatusText[item.appealStatus] }}</van-tag>
+            <van-tag :type="appealTagType[item.appealStatus]">{{ appealStatusText[item.appealStatus] }}</van-tag>
           </div>
           <p>{{ item.reason }}</p>
           <p class="meta">扣分 {{ item.deductScore }} · {{ shortTime(item.appealTime) }}</p>
@@ -60,7 +60,7 @@ import { onMounted, ref } from 'vue'
 import AppShell from '../components/AppShell.vue'
 import EmptyState from '../components/EmptyState.vue'
 import { creditApi } from '../api'
-import { appealStatusText } from '../constants/status'
+import { appealStatusText, appealTagType } from '../constants/status'
 import { shortTime } from '../utils/format'
 import type { AdminBookingBreachAppealVO, CreditOverviewVO, CreditRecordVO } from '../types/backend'
 
