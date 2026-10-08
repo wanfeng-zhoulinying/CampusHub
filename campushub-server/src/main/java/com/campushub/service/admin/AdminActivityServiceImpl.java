@@ -145,10 +145,14 @@ public class AdminActivityServiceImpl implements AdminActivityService {
             throw new BusinessException("活动审核失败");
         }
 
+        String auditContent = "你发布的活动《" + activity.getTitle() + "》" + getAuditResultText(auditDTO.getAuditStatus());
+        if (auditDTO.getAuditRemark() != null && !auditDTO.getAuditRemark().isBlank()) {
+            auditContent += "：" + auditDTO.getAuditRemark();
+        }
         messageService.createMessage(
                 activity.getPublisherId(),
                 "活动审核结果",
-                "你发布的活动《" + activity.getTitle() + "》" + getAuditResultText(auditDTO.getAuditStatus()),
+                auditContent,
                 MessageTypeConstant.AUDIT,
                 activityId
         );
