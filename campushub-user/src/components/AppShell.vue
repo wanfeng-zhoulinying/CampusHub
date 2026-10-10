@@ -7,6 +7,7 @@
           <span>{{ subtitle }}</span>
         </RouterLink>
         <nav class="desktop-nav">
+          <van-button size="small" plain hairline to="/home">首页</van-button>
           <van-button size="small" plain hairline to="/venues">场地</van-button>
           <van-button size="small" plain hairline to="/activities">活动</van-button>
           <van-button size="small" plain hairline to="/messages">
